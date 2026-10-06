@@ -93,6 +93,18 @@
       display: block;
     }
   </style>
+<style>
+.wa-tab-content:not(.hidden){animation:waFade .35s ease both}
+@keyframes waFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.wa-src{transition:all .25s ease}
+.wa-src:hover{border-color:rgba(16,185,129,.45);transform:translateY(-2px);box-shadow:0 10px 30px -12px rgba(16,185,129,.35)}
+.wa-ico{width:2.5rem;height:2.5rem;border-radius:.9rem;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(16,185,129,.25),rgba(6,182,212,.2));border:1px solid rgba(16,185,129,.35);color:#6ee7b7}
+.wa-drop{border:2px dashed rgba(148,163,184,.35);transition:all .2s}
+.wa-drop:hover,.wa-drop.over{border-color:#10b981;background:rgba(16,185,129,.08)}
+.wa-avatar{width:1.9rem;height:1.9rem;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff;flex-shrink:0}
+#wa-import-tbody tr{transition:background .15s}
+#wa-import-tbody tr:has(input:not(:checked)){opacity:.4}
+</style>
 </head>
 <body class="flex min-h-screen bg-[#070a13] selection:bg-blue-600 selection:text-white">
 
@@ -425,7 +437,7 @@
               <div class="flex items-center gap-2 mb-1">
                 <span id="wa-connection-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border-emerald-500/40">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span id="wa-status-text">CONECTADO: +54 9 11 2130-5416</span>
+                  <span id="wa-status-text">WhatsApp sin vincular</span>
                 </span>
                 <span class="text-xs text-slate-400">• Motor WhatsApp Web</span>
               </div>
@@ -463,12 +475,21 @@
           </button>
 
           <button
+            onclick="waApp.switchTab('import')"
+            data-wa-tab="import"
+            class="wa-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
+          >
+            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            2. Importar Contactos
+          </button>
+
+          <button
             onclick="waApp.switchTab('campaign')"
             data-wa-tab="campaign"
             class="wa-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
           >
             <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m22 2-7 20-4-9-9-4Z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 2 11 13"/></svg>
-            2. Lanzar Campaña Masiva
+            3. Lanzar Campaña Masiva
           </button>
 
           <button
@@ -477,7 +498,7 @@
             class="wa-tab-btn flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
           >
             <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            3. Plantillas de WhatsApp
+            4. Plantillas de WhatsApp
           </button>
         </div>
 
@@ -487,10 +508,10 @@
             <div class="w-full text-center">
               <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center justify-center gap-2">
                 <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/></svg>
-                Vinculación por Código QR
+                Vincular WhatsApp
               </h3>
               <p class="text-xs text-slate-400 mt-1">
-                Abre WhatsApp en tu teléfono ➔ Dispositivos vinculados ➔ Vincular dispositivo
+                El QR lo muestra WhatsApp Web. Los mensajes se envían desde esa sesión.
               </p>
             </div>
 
@@ -553,6 +574,69 @@
             <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2">
               <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               <span>El envío abrirá automáticamente WhatsApp con el texto y prospecto asignado.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Importar contactos -->
+        <div id="wa-tab-content-import" class="wa-tab-content hidden space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="wa-src p-5 rounded-3xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl space-y-3">
+              <div class="wa-ico"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></svg></div>
+              <h3 class="text-sm font-bold text-white">Agenda del teléfono</h3>
+              <p class="text-xs text-slate-400">Abre la agenda del celular (la misma que sincroniza WhatsApp) y elige "Seleccionar todos".</p>
+              <button id="wa-import-picker-btn" onclick="waImport.pickFromPhone()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold">Elegir contactos</button>
+              <p id="wa-import-picker-note" class="text-[11px] text-amber-300">Solo funciona en Chrome para Android con HTTPS. En iPhone o PC usa el archivo .vcf/.csv.</p>
+            </div>
+            <div class="wa-src p-5 rounded-3xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl space-y-3">
+              <div class="wa-ico"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+              <h3 class="text-sm font-bold text-white">Archivo .vcf o .csv</h3>
+              <p class="text-xs text-slate-400">Exporta tus contactos (Contactos de iPhone/Android o Google Contactos) y súbelos aquí.</p>
+              <label class="wa-drop block w-full py-5 rounded-2xl text-slate-200 text-xs font-bold text-center cursor-pointer" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="this.classList.remove('over');waImport.handleDrop(event)">
+                Arrastra el archivo o haz clic
+                <input type="file" accept=".vcf,.csv,text/vcard,text/csv" class="hidden" onchange="waImport.handleFile(event)" />
+              </label>
+            </div>
+            <div class="wa-src p-5 rounded-3xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl space-y-3">
+              <div class="wa-ico"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></div>
+              <h3 class="text-sm font-bold text-white">Pegar números</h3>
+              <textarea id="wa-import-paste" rows="3" placeholder="Juan Pérez, 11 5555-0000&#10;+54 9 351 555-1234" class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-mono"></textarea>
+              <button onclick="waImport.handlePaste()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-bold">Agregar</button>
+            </div>
+          </div>
+
+          <div id="wa-import-preview" class="hidden p-6 rounded-3xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="text-sm font-bold text-white">Revisar contactos (<span id="wa-import-selected">0</span> seleccionados)</h3>
+                <p id="wa-import-summary" class="text-xs text-slate-400 mt-0.5"></p>
+              </div>
+              <div class="flex items-center gap-2">
+                <input type="text" oninput="waImport.filter(this.value)" placeholder="Buscar..." class="px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs" />
+                <button onclick="waImport.clear()" class="px-3 py-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30 text-xs font-semibold">Descartar</button>
+              </div>
+            </div>
+            <div class="max-h-96 overflow-auto rounded-2xl border border-slate-800">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-950 text-slate-400 sticky top-0">
+                  <tr>
+                    <th class="py-2 px-3 w-8"><input type="checkbox" id="wa-import-select-all" checked onchange="waImport.toggleAll(this.checked)" /></th>
+                    <th class="py-2 px-3">Nombre</th><th class="py-2 px-3">WhatsApp</th><th class="py-2 px-3">Empresa</th>
+                  </tr>
+                </thead>
+                <tbody id="wa-import-tbody" class="divide-y divide-slate-800/50"></tbody>
+              </table>
+            </div>
+            <div class="flex flex-wrap items-end gap-3">
+              <div class="flex-1 min-w-[220px]">
+                <label class="block text-[11px] text-slate-400 mb-1">Nombre de la lista</label>
+                <input type="text" id="wa-import-list-name" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs" />
+              </div>
+              <button onclick="waImport.save(false)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-bold">Guardar como lista</button>
+              <button onclick="waImport.save(true)" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold">Guardar y preparar campaña ➔</button>
+            </div>
+            <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
+              Escribir a toda tu agenda de golpe es la forma más rápida de que WhatsApp bloquee el número. Envía por lotes, con retardo alto y solo a quienes esperan tu mensaje.
             </div>
           </div>
         </div>
@@ -1010,7 +1094,99 @@ Quedo a tu disposición,
             </div>
           </div>
 
-          <div class="lg:col-span-3">
+          <div class="lg:col-span-3 space-y-6">
+            <div id="wa-settings-card" class="rounded-3xl bg-slate-900/40 border border-emerald-500/20 p-6 backdrop-blur-xl space-y-4">
+              <div class="border-b border-slate-800 pb-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-center"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.6A8.4 8.4 0 1 1 21 11.5z"/></svg></div>
+                <div>
+                  <h3 class="text-base font-bold text-white">Configuración de WhatsApp</h3>
+                  <p class="text-xs text-slate-400">Número emisor, ritmo de envío y firma de tus mensajes.</p>
+                </div>
+              </div>
+              <form onsubmit="waSettings.save(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Número emisor (con código de país) *</label>
+                  <input id="wa-set-phone" type="text" placeholder="5491122334455" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500" />
+                </div>
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">Espera mínima (seg)</label><input id="wa-set-min" type="number" min="5" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500" /></div>
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">Espera máxima (seg)</label><input id="wa-set-max" type="number" min="5" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500" /></div>
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">Límite diario de mensajes</label><input id="wa-set-daily" type="number" min="1" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500" /></div>
+                <div class="flex items-end"><p id="wa-set-today" class="text-xs text-slate-400"></p></div>
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Firma (se agrega al final de cada mensaje)</label>
+                  <textarea id="wa-set-signature" rows="2" placeholder="— Equipo Comercial" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+                <div class="md:col-span-2 flex justify-end">
+                  <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold">Guardar configuración de WhatsApp</button>
+                </div>
+              </form>
+            </div>
+            <div id="wa-autosend-card" class="rounded-3xl bg-slate-900/40 border border-emerald-500/20 p-6 backdrop-blur-xl space-y-4">
+              <div class="border-b border-slate-800 pb-4 flex items-start justify-between gap-4">
+                <div>
+                  <h3 class="text-base font-bold text-white">Envío automático (sin pulsar Enviar)</h3>
+                  <p class="text-xs text-slate-400">Un navegador no deja que esta página controle WhatsApp Web, por eso se usa un pequeño script auxiliar que se instala una sola vez.</p>
+                </div>
+                <label class="flex items-center gap-2 text-xs font-semibold text-slate-200 shrink-0 cursor-pointer">
+                  <input id="wa-autosend-toggle" type="checkbox" onchange="waAuto.toggle(this.checked)" class="accent-emerald-500" />
+                  Activado
+                </label>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                  <span id="wa-auto-progress-label">Instalación: 0 de 5 pasos</span>
+                  <span id="wa-auto-browser" class="font-mono text-slate-500"></span>
+                </div>
+                <div class="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden"><div id="wa-auto-progress" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all" style="width:0%"></div></div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label class="flex items-center gap-2 text-xs font-bold text-slate-200 cursor-pointer"><input type="checkbox" data-wa-step="1" onchange="waAuto.setStep(1,this.checked)" class="accent-emerald-500" /> 1. Instalar Tampermonkey</label>
+                  <p class="text-[11px] text-slate-400">Abre la tienda de tu navegador con la extensión lista para agregar.</p>
+                  <button type="button" onclick="waAuto.installExtension()" class="w-full py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold">Agregar extensión</button>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label class="flex items-center gap-2 text-xs font-bold text-slate-200 cursor-pointer"><input type="checkbox" data-wa-step="2" onchange="waAuto.setStep(2,this.checked)" class="accent-emerald-500" /> 2. Dar permisos a la extensión</label>
+                  <p class="text-[11px] text-slate-400">El navegador exige activarlos a mano. Copia el enlace, pégalo en una pestaña nueva y activa <b>"Permitir scripts de usuario"</b> (o <b>Modo desarrollador</b>) y el acceso a <b>web.whatsapp.com</b>.</p>
+                  <button type="button" onclick="waAuto.openPermissions()" class="w-full py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold">Copiar enlace de permisos</button>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label class="flex items-center gap-2 text-xs font-bold text-slate-200 cursor-pointer"><input type="checkbox" data-wa-step="3" onchange="waAuto.setStep(3,this.checked)" class="accent-emerald-500" /> 3. Instalar el script</label>
+                  <p class="text-[11px] text-slate-400">Se abre la pantalla de Tampermonkey: solo pulsa <b>Instalar</b>. Si no aparece, usa "Copiar script" (abajo).</p>
+                  <button type="button" onclick="waAuto.installScript()" class="w-full py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold">Instalar script</button>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label class="flex items-center gap-2 text-xs font-bold text-slate-200 cursor-pointer"><input type="checkbox" data-wa-step="4" onchange="waAuto.setStep(4,this.checked)" class="accent-emerald-500" /> 4. Iniciar sesión en WhatsApp Web</label>
+                  <p class="text-[11px] text-slate-400">Abre WhatsApp Web, escanea el QR y verás un cartel verde "AutoSend: activo" arriba.</p>
+                  <button type="button" onclick="window.open('https://web.whatsapp.com','wa_sender')" class="w-full py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold">Abrir WhatsApp Web</button>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label class="flex items-center gap-2 text-xs font-bold text-slate-200 cursor-pointer"><input type="checkbox" data-wa-step="5" onchange="waAuto.setStep(5,this.checked)" class="accent-emerald-500" /> 5. Permitir ventanas emergentes y probar</label>
+                  <p class="text-[11px] text-slate-400">Envía un mensaje a tu propio número. Si se envía solo, quedó todo listo.</p>
+                  <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="waAuto.testPopup()" class="py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold">Probar ventanas</button>
+                    <button type="button" onclick="waAuto.runTest()" class="py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold">Probar envío</button>
+                  </div>
+                </div>
+              </div>
+
+              <details class="rounded-2xl bg-slate-950 border border-slate-800 p-4 text-xs text-slate-300">
+                <summary class="cursor-pointer font-semibold text-slate-200">Instalación con un solo clic desde una URL (opcional) y método manual</summary>
+                <div class="mt-3 space-y-3">
+                  <p class="text-[11px] text-slate-400">Tampermonkey instala con un clic cualquier archivo <code>.user.js</code> publicado en una dirección web (por ejemplo GitHub "Raw"). Sube el archivo descargado y pega aquí su URL: el botón "Instalar script" la usará y además recibirás actualizaciones automáticas.</p>
+                  <div class="flex gap-2">
+                    <input id="wa-auto-script-url" type="url" placeholder="https://raw.githubusercontent.com/usuario/repo/main/whatsapp-autosend.user.js" onchange="waAuto.saveUrl(this.value)" class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="waAuto.copy()" class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold">Copiar script</button>
+                    <button type="button" onclick="waAuto.download()" class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold">Descargar .user.js</button>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Manual: panel de Tampermonkey → Crear nuevo script → borrar todo → pegar → Ctrl+S.</p>
+                </div>
+              </details>
+              <p class="text-xs text-amber-300/90">El envío automático va contra los términos de WhatsApp y puede causar el bloqueo del número. Usa esperas largas (30 s o más) y un límite diario bajo.</p>
+            </div>
             <div class="rounded-3xl bg-slate-900/40 border border-slate-800 p-6 backdrop-blur-xl space-y-4">
               <div class="border-b border-slate-800 pb-4">
                 <h3 class="text-base font-bold text-white">Configuración de Servidores SMTP y API</h3>
@@ -1516,7 +1692,7 @@ self.addEventListener('fetch', (e) => {
         if (viewId === 'campaigns') emailCampaigns.render();
         if (viewId === 'contacts') contactsApp.render();
         if (viewId === 'templates') templatesApp.render();
-        if (viewId === 'settings') settingsApp.render();
+        if (viewId === 'settings') { settingsApp.render(); waSettings.load(); waAuto.renderSteps(); }
       },
 
       renderDashboard() {
@@ -1688,6 +1864,18 @@ self.addEventListener('fetch', (e) => {
         }
       },
 
+      // Abre el chat directo en WhatsApp Web (sin pasar por la página wa.me ni pedir abrir la app)
+      // y reutiliza siempre la MISMA pestaña para no abrir una nueva por cada mensaje.
+      waWin: null,
+      openChat(phone, text) {
+        const url = `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}${waSettings.get().autosend ? '&autosend=1' : ''}`;
+        if (this.waWin && !this.waWin.closed) {
+          try { this.waWin.location.href = url; return this.waWin; } catch (e) {}
+        }
+        this.waWin = window.open(url, 'wa_sender');
+        return this.waWin;
+      },
+
       switchTab(tabId) {
         this.activeTab = tabId;
         document.querySelectorAll('.wa-tab-content').forEach(c => c.classList.add('hidden'));
@@ -1702,9 +1890,21 @@ self.addEventListener('fetch', (e) => {
 
         const target = document.getElementById('wa-tab-content-' + tabId);
         if (target) target.classList.remove('hidden');
+        if (tabId === 'import') waImport.init();
+        if (tabId === 'campaign') waSettings.applyDelays();
+      },
+
+      linkFromPanel() {
+        const phone = (document.getElementById('wa-link-phone')?.value || '').replace(/\D/g, '');
+        if (phone.length < 10) return app.showToast('Ingresa tu número con código de país', 'error');
+        app.profile.phone = phone;
+        storage.save('profile', app.profile);
+        this.isConnected = false;
+        this.toggleConnection();
       },
 
       toggleConnection() {
+        if (!this.isConnected && !app.profile?.phone) return app.showToast('Primero ingresa tu número emisor', 'error');
         this.isConnected = !this.isConnected;
         storage.save('waConnected', this.isConnected);
         this.updateConnectionUI();
@@ -1736,9 +1936,13 @@ self.addEventListener('fetch', (e) => {
           statusText.textContent = 'DESCONECTADO';
           btnLabel.textContent = 'Vincular Número';
           qrContainer.innerHTML = `
-            <div class="text-center p-6 space-y-3">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://wa.me/${userPhone}" class="w-48 h-48 mx-auto rounded-xl" />
-              <p class="text-xs text-slate-700 font-semibold">Escanea con tu WhatsApp para vincular</p>
+            <div class="p-5 space-y-3 w-full max-w-xs text-left">
+              <p class="text-xs font-bold text-slate-800">1. Tu número emisor</p>
+              <input id="wa-link-phone" type="text" value="${userPhone}" placeholder="5491122334455" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-slate-900 text-sm font-mono" />
+              <p class="text-xs font-bold text-slate-800 pt-1">2. Inicia sesión en WhatsApp Web</p>
+              <button onclick="window.open('https://web.whatsapp.com','_blank')" class="w-full py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">Abrir WhatsApp Web (escanea su QR)</button>
+              <p class="text-xs font-bold text-slate-800 pt-1">3. Confirma</p>
+              <button onclick="waApp.linkFromPanel()" class="w-full py-2 rounded-xl bg-slate-900 text-white text-xs font-bold">Ya inicié sesión, vincular</button>
             </div>
           `;
         }
@@ -1782,7 +1986,7 @@ self.addEventListener('fetch', (e) => {
           
           const encoded = encodeURIComponent(message);
           const fullPhone = phone.startsWith('54') || phone.length > 10 ? phone : ('549' + phone.replace(/^0+/, ''));
-          window.open(`https://wa.me/${fullPhone}?text=${encoded}`, '_blank');
+          waApp.openChat(fullPhone, message);
 
           const resultBox = document.getElementById('wa-test-result');
           resultBox.className = 'mt-4 p-3 rounded-xl text-xs flex items-start gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300';
@@ -1859,23 +2063,46 @@ self.addEventListener('fetch', (e) => {
           .replace(/\{\{mi_empresa\}\}/g, app.profile?.companyName || 'Nuestra Empresa')
           .replace(/\{\{mi_email\}\}/g, app.profile?.userEmail || 'info@empresa.com');
 
+        const terminal = document.getElementById('wa-terminal-logs');
+        const addLog = (cls, html) => {
+          const l = document.createElement('div');
+          l.className = 'flex items-start gap-2 ' + cls;
+          l.innerHTML = `<span class="text-slate-500">[${timeStr}]</span> <span>${html}</span>`;
+          terminal.appendChild(l);
+          terminal.scrollTop = terminal.scrollHeight;
+        };
+
         let rawPhone = String(contact.phone || '').replace(/\D/g, '');
-        if (!rawPhone) { console.warn('Sin teléfono:', contact); return; }
+        if (!rawPhone) {
+          state.failed++;
+          state.currentIndex++;
+          document.getElementById('wa-count-failed').textContent = state.failed;
+          addLog('text-rose-300', `Sin teléfono: ${waImport.esc(contact.name || contact.email)}`);
+          this.runningTimeout = setTimeout(() => this.dispatchNextWhatsApp(), 0);
+          return;
+        }
         const fullPhone = rawPhone.startsWith('54') || rawPhone.length > 10 ? rawPhone : ('549' + rawPhone.replace(/^0+/, ''));
 
-        const encoded = encodeURIComponent(message);
-        window.open(`https://wa.me/${fullPhone}?text=${encoded}`, '_blank');
+        const cfg = waSettings.get();
+        if (waSettings.sentToday() >= cfg.daily) {
+          addLog('text-amber-300', `Límite diario alcanzado (${cfg.daily}). Campaña pausada; continúa mañana o súbelo en Configuración.`);
+          this.pauseCampaign();
+          return;
+        }
+        if (cfg.signature) message += '\n\n' + cfg.signature;
+        const win = this.openChat(fullPhone, message);
+        if (!win) {
+          addLog('text-amber-300', 'El navegador bloqueó la ventana. Permite ventanas emergentes para este sitio y pulsa Reanudar.');
+          this.pauseCampaign();
+          return;
+        }
 
+        waSettings.addSent();
         state.sent++;
         state.currentIndex++;
         document.getElementById('wa-count-sent').textContent = state.sent;
 
-        const terminal = document.getElementById('wa-terminal-logs');
-        const logLine = document.createElement('div');
-        logLine.className = 'flex items-start gap-2 text-emerald-300';
-        logLine.innerHTML = `<span class="text-slate-500">[${timeStr}]</span> <span>Mensaje despachado a ${contact.name || contact.email} (+${fullPhone})</span>`;
-        terminal.appendChild(logLine);
-        terminal.scrollTop = terminal.scrollHeight;
+        addLog('text-emerald-300', `Mensaje despachado a ${waImport.esc(contact.name || contact.email)} (+${fullPhone})`);
 
         const delay = Math.floor(Math.random() * (state.maxDelay - state.minDelay + 1) + state.minDelay) * 1000;
         this.runningTimeout = setTimeout(() => {
@@ -1926,6 +2153,350 @@ self.addEventListener('fetch', (e) => {
         document.getElementById('wa-btn-reset-monitor').classList.add('hidden');
         this.campaignState = null;
       }
+    };
+
+    // ---------- WHATSAPP CONTACT IMPORT ----------
+    const waImport = {
+      items: [], detected: 0, invalid: 0, dupes: 0, source: '',
+
+      esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); },
+
+      init() {
+        const ok = 'contacts' in navigator && 'ContactsManager' in window;
+        const note = document.getElementById('wa-import-picker-note');
+        const btn = document.getElementById('wa-import-picker-btn');
+        if (note) note.classList.toggle('hidden', ok);
+        if (btn) { btn.disabled = !ok; btn.classList.toggle('opacity-50', !ok); }
+      },
+
+      normalizePhone(raw) {
+        const hasPlus = String(raw || '').trim().startsWith('+');
+        let d = String(raw || '').replace(/\D/g, '');
+        if (!d) return '';
+        if (d.startsWith('00')) d = d.slice(2);
+        else if (!hasPlus && !d.startsWith('54')) {
+          d = d.replace(/^0+/, '');
+          if (d.length === 12) for (const i of [2, 3, 4]) if (d.slice(i, i + 2) === '15') { d = d.slice(0, i) + d.slice(i + 2); break; }
+          if (d.length === 10) d = '549' + d;
+        }
+        if (d.startsWith('54') && !d.startsWith('549') && d.length === 12) d = '549' + d.slice(2);
+        return d.length >= 10 && d.length <= 15 ? d : '';
+      },
+
+      // ---- Fuente 1: agenda del teléfono (Contact Picker API, Chrome Android) ----
+      async pickFromPhone() {
+        if (!('contacts' in navigator && 'ContactsManager' in window)) {
+          app.showToast('Este navegador no permite leer la agenda. Usa archivo .vcf/.csv', 'error');
+          return;
+        }
+        try {
+          const supported = await navigator.contacts.getProperties();
+          const props = ['name', 'tel'].concat(supported.includes('email') ? ['email'] : []);
+          const res = await navigator.contacts.select(props, { multiple: true });
+          this.ingest(res.map(c => ({ name: (c.name || [])[0] || '', phones: c.tel || [], email: (c.email || [])[0] || '', company: '' })), 'agenda del teléfono');
+        } catch (e) {
+          if (e.name !== 'AbortError') app.showToast('No se pudo acceder a la agenda', 'error');
+        }
+      },
+
+      // ---- Fuente 2: archivo .vcf / .csv ----
+      handleDrop(e) { e.preventDefault(); this.readFile(e.dataTransfer.files?.[0]); },
+      handleFile(e) { const f = e.target.files?.[0]; e.target.value = ''; this.readFile(f); },
+      readFile(file) {
+        if (!file) return;
+        if (/\.csv$/i.test(file.name)) {
+          Papa.parse(file, { header: true, skipEmptyLines: true, complete: r => this.ingest(this.parseCsvRows(r.data), 'archivo CSV') });
+        } else {
+          const fr = new FileReader();
+          fr.onload = () => this.ingest(this.parseVcf(String(fr.result)), 'archivo vCard');
+          fr.readAsText(file);
+        }
+      },
+
+      decodeQP(s) {
+        try { return decodeURIComponent(s.replace(/%/g, '%25').replace(/=([0-9A-F]{2})/gi, '%$1')); } catch (e) { return s; }
+      },
+
+      parseVcf(text) {
+        const lines = text.replace(/\r\n|\r/g, '\n').replace(/\n[ \t]/g, '').split('\n');
+        const out = []; let cur = null;
+        for (let i = 0; i < lines.length; i++) {
+          let line = lines[i];
+          while (/QUOTED-PRINTABLE/i.test(line) && line.endsWith('=') && i + 1 < lines.length) line = line.slice(0, -1) + lines[++i];
+          if (/^BEGIN:VCARD/i.test(line)) { cur = { fn: '', n: '', org: '', email: '', tels: [] }; continue; }
+          if (/^END:VCARD/i.test(line)) { if (cur) out.push(cur); cur = null; continue; }
+          if (!cur) continue;
+          const idx = line.indexOf(':'); if (idx < 0) continue;
+          const parts = line.slice(0, idx).split(';');
+          const key = parts[0].split('.').pop().toUpperCase();
+          const params = parts.slice(1).join(';').toUpperCase();
+          let val = line.slice(idx + 1);
+          if (params.includes('QUOTED-PRINTABLE')) val = this.decodeQP(val);
+          val = val.replace(/\\n/gi, ' ').replace(/\\([,;\\])/g, '$1').trim();
+          if (key === 'FN') cur.fn = val;
+          else if (key === 'N') { const p = val.split(';'); cur.n = ((p[1] || '') + ' ' + (p[0] || '')).trim(); }
+          else if (key === 'ORG') cur.org = val.split(';')[0];
+          else if (key === 'EMAIL' && !cur.email) cur.email = val;
+          else if (key === 'TEL') cur.tels.push({ v: val, cell: /CELL|MOBILE|IPHONE/.test(params) });
+        }
+        return out.map(c => ({
+          name: c.fn || c.n, company: c.org, email: c.email,
+          phones: c.tels.sort((a, b) => b.cell - a.cell).map(t => t.v)
+        }));
+      },
+
+      parseCsvRows(rows) {
+        const get = (r, kws) => {
+          for (const kw of kws) {
+            const k = Object.keys(r).find(k => { const l = k.toLowerCase(); return l.includes(kw) && !/type|label|tipo|etiqueta/.test(l); });
+            if (k && String(r[k] ?? '').trim()) return String(r[k]).trim();
+          }
+          return '';
+        };
+        return rows.map(r => {
+          const first = get(r, ['first name', 'given']), last = get(r, ['last name', 'apellido', 'family']);
+          const name = get(r, ['display name', 'full name', 'nombre completo']) || (first || last ? (first + ' ' + last).trim() : get(r, ['nombre', 'name']));
+          const phones = [get(r, ['phone 1 - value', 'tel', 'cel', 'móvil', 'movil', 'phone']), get(r, ['phone 2 - value'])].filter(Boolean);
+          return { name, phones, email: get(r, ['e-mail 1 - value', 'mail', 'correo']), company: get(r, ['organization name', 'organization 1 - name', 'empresa', 'company', 'organización']) };
+        });
+      },
+
+      // ---- Fuente 3: pegar números ----
+      handlePaste() {
+        const txt = document.getElementById('wa-import-paste').value;
+        const rows = txt.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+          const m = l.match(/\+?\d[\d\s().-]{7,}\d/);
+          const name = m ? l.replace(m[0], '').replace(/^[\s,;:|-]+|[\s,;:|-]+$/g, '') : l;
+          return { name, phones: m ? [m[0]] : [], email: '', company: '' };
+        });
+        this.ingest(rows, 'números pegados');
+        document.getElementById('wa-import-paste').value = '';
+      },
+
+      ingest(rows, label) {
+        const seen = new Set(this.items.map(i => i.phone));
+        rows.forEach(r => {
+          this.detected++;
+          const phone = (r.phones || []).map(p => this.normalizePhone(p)).find(Boolean);
+          if (!phone) { this.invalid++; return; }
+          if (seen.has(phone)) { this.dupes++; return; }
+          seen.add(phone);
+          this.items.push({ name: r.name || '', phone, email: r.email || '', company: r.company || '', selected: true });
+        });
+        this.source = !this.source || this.source === label ? label : 'varias fuentes';
+        this.render();
+        app.showToast(`${this.items.length} contactos listos para revisar`, 'success');
+      },
+
+      render() {
+        document.getElementById('wa-import-preview').classList.toggle('hidden', this.detected === 0);
+        document.getElementById('wa-import-summary').textContent = `${this.detected} detectados · ${this.items.length} válidos · ${this.dupes} duplicados · ${this.invalid} sin teléfono válido`;
+        const nameInput = document.getElementById('wa-import-list-name');
+        if (!nameInput.value) nameInput.value = 'Contactos WhatsApp ' + new Date().toLocaleDateString('es-AR');
+        document.getElementById('wa-import-tbody').innerHTML = this.items.map((it, i) => `
+          <tr data-q="${this.esc((it.name + ' ' + it.phone + ' ' + it.company).toLowerCase())}" class="hover:bg-slate-900/30">
+            <td class="py-2 px-3"><input type="checkbox" ${it.selected ? 'checked' : ''} onchange="waImport.toggle(${i}, this.checked)" /></td>
+            <td class="py-2 px-3"><div class="flex items-center gap-2.5"><span class="wa-avatar" style="background:hsl(${this.hue(it.name || it.phone)},55%,42%)">${this.initials(it.name)}</span><span class="text-white font-medium">${this.esc(it.name) || '<span class="text-slate-500">Sin nombre</span>'}</span></div></td>
+            <td class="py-2 px-3 font-mono text-slate-300">${this.fmt(it.phone)}</td>
+            <td class="py-2 px-3 text-slate-400">${this.esc(it.company) || '-'}</td>
+          </tr>`).join('');
+        this.updateCount();
+      },
+
+      updateCount() {
+        const n = this.items.filter(i => i.selected).length;
+        document.getElementById('wa-import-selected').textContent = n;
+        document.getElementById('wa-import-select-all').checked = n > 0 && n === this.items.length;
+      },
+
+      initials(n) { const p = String(n || '').trim().split(/\s+/).filter(Boolean); return this.esc(((p[0] || '?')[0] + (p[1] ? p[1][0] : '')).toUpperCase()); },
+      hue(str) { let h = 0; for (const c of String(str)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; },
+      fmt(d) { return /^5491\d{9}$/.test(d) ? `+54 9 11 ${d.slice(5, 9)}-${d.slice(9)}` : '+' + d; },
+
+      toggle(i, v) { this.items[i].selected = v; this.updateCount(); },
+
+      toggleAll(v) {
+        this.items.forEach(i => i.selected = v);
+        document.querySelectorAll('#wa-import-tbody input[type=checkbox]').forEach(c => c.checked = v);
+        this.updateCount();
+      },
+
+      filter(q) {
+        q = q.toLowerCase();
+        document.querySelectorAll('#wa-import-tbody tr').forEach(tr => { tr.style.display = tr.dataset.q.includes(q) ? '' : 'none'; });
+      },
+
+      clear() {
+        this.items = []; this.detected = 0; this.invalid = 0; this.dupes = 0; this.source = '';
+        document.getElementById('wa-import-list-name').value = '';
+        this.render();
+      },
+
+      save(goCampaign) {
+        const sel = this.items.filter(i => i.selected);
+        if (!sel.length) return app.showToast('Selecciona al menos un contacto', 'error');
+        const stamp = Date.now();
+        const list = {
+          id: 'list_' + stamp,
+          name: document.getElementById('wa-import-list-name').value.trim() || 'Contactos WhatsApp',
+          description: 'Importado desde ' + this.source,
+          createdAt: new Date().toISOString(),
+          contacts: sel.map((i, n) => ({ id: 'wa_' + stamp + '_' + n, email: i.email, name: i.name, company: i.company, contactRole: '', neighborhood: '', phone: i.phone, status: 'VALID' }))
+        };
+        try {
+          const lists = storage.get('lists') || [];
+          lists.unshift(list);
+          storage.save('lists', lists);
+        } catch (e) { return app.showToast('No hay espacio en el navegador para guardar la lista', 'error'); }
+        contactsApp.selectedListId = list.id;
+        const n = sel.length;
+        this.clear();
+        waApp.init();
+        document.getElementById('wa-campaign-list').value = list.id;
+        if (goCampaign) waApp.switchTab('campaign');
+        app.showToast(`Lista guardada con ${n} contactos`, 'success');
+      }
+    };
+
+    // ---------- WHATSAPP AUTO-SEND HELPER ----------
+    const waAuto = {
+      script: "// ==UserScript==\n// @name         WhatsApp Web Auto-Send (Outreach Engine)\n// @namespace    outreach-engine\n// @version      1.3\n// @description  Pulsa \"Enviar\" autom\u00e1ticamente cuando el chat se abre desde la app con &autosend=1\n// @match        https://web.whatsapp.com/*\n// @run-at       document-start\n// @grant        GM_setValue\n// @grant        GM_getValue\n// ==/UserScript==\n\n(function () {\n  'use strict';\n  const log = (...a) => console.log('[AutoSend]', ...a);\n\n  // Cartel visible en la p\u00e1gina para saber si el script corre (sin abrir la consola)\n  function banner(msg, ms) {\n    try {\n      let b = document.getElementById('__autosend_b');\n      if (!b) {\n        b = document.createElement('div');\n        b.id = '__autosend_b';\n        b.style.cssText = 'position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2147483647;background:#059669;color:#fff;font:600 12px sans-serif;padding:6px 14px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.35)';\n        (document.body || document.documentElement).appendChild(b);\n      }\n      b.textContent = 'AutoSend: ' + msg;\n      if (ms) setTimeout(() => b.remove(), ms);\n    } catch (e) {}\n  }\n\n  log('script activo en', location.href);\n  const hasFlag = new URLSearchParams(location.search).get('autosend') === '1';\n  // WhatsApp Web borra los par\u00e1metros de la URL al cargar, as\u00ed que se leen al inicio.\n  if (hasFlag) { GM_setValue('pendingSince', Date.now()); log('env\u00edo pendiente marcado'); }\n\n  const MAX_AGE_MS = 60000;\n  const POLL_MS = 500;\n  const TIMEOUT_MS = 40000;\n\n  function findSendButton() {\n    const sels = ['button[aria-label=\"Enviar\"]', 'button[aria-label=\"Send\"]',\n      '[data-icon=\"send\"]', '[data-icon=\"wds-ic-send-filled\"]', '[data-icon*=\"send\"]'];\n    for (const s of sels) {\n      const el = document.querySelector(s);\n      if (el) return el.closest('button,[role=\"button\"]') || el;\n    }\n    for (const b of document.querySelectorAll('button,[role=\"button\"]')) {\n      const l = (b.getAttribute('aria-label') || '').trim().toLowerCase();\n      if (l === 'enviar' || l === 'send') return b;\n    }\n    return null;\n  }\n\n  function findComposer() {\n    return document.querySelector('[contenteditable=\"true\"][data-tab=\"10\"]') ||\n           document.querySelector('footer [contenteditable=\"true\"]') ||\n           document.querySelector('div[contenteditable=\"true\"][role=\"textbox\"]');\n  }\n\n  function invalidNumberDialog() {\n    const t = ((document.body && document.body.innerText) || '').toLowerCase();\n    return t.includes('no es v\u00e1lido') || t.includes('is invalid') || t.includes('not on whatsapp');\n  }\n\n  function pressEnter(el) {\n    el.focus();\n    ['keydown', 'keypress', 'keyup'].forEach(type =>\n      el.dispatchEvent(new KeyboardEvent(type, { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true })));\n  }\n\n  function run() {\n    const since = GM_getValue('pendingSince', 0);\n    if (!since || Date.now() - since > MAX_AGE_MS) {\n      log('nada pendiente');\n      banner('activo (sin env\u00edo pendiente)', 3000);\n      return;\n    }\n    banner('esperando el chat...');\n    const started = Date.now();\n    const timer = setInterval(() => {\n      const elapsed = Date.now() - started;\n      if (elapsed > TIMEOUT_MS) { clearInterval(timer); GM_setValue('pendingSince', 0); log('tiempo agotado'); banner('no encontr\u00e9 el bot\u00f3n Enviar', 8000); return; }\n      if (invalidNumberDialog()) { clearInterval(timer); GM_setValue('pendingSince', 0); log('n\u00famero inv\u00e1lido'); banner('n\u00famero inv\u00e1lido, omitido', 6000); return; }\n      const btn = findSendButton();\n      const box = findComposer();\n      if (btn) {\n        clearInterval(timer);\n        GM_setValue('pendingSince', 0);\n        banner('enviando...');\n        setTimeout(() => { btn.click(); banner('enviado', 3000); }, 1200 + Math.random() * 1500);\n      } else if (box && elapsed > 8000 && box.textContent.trim()) {\n        clearInterval(timer);\n        GM_setValue('pendingSince', 0);\n        banner('probando tecla Enter...');\n        pressEnter(box);\n        setTimeout(() => banner('Enter enviado', 3000), 500);\n      }\n    }, POLL_MS);\n  }\n\n  // Se ejecuta ya (no depende del evento \"load\", que en algunos navegadores ya pas\u00f3 al inyectar el script)\n  run();\n})();\n",
+      permUrls: {
+        chrome: 'chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo',
+        edge: 'edge://extensions/?id=iikmkjmpaadaobahmlepeloendndfphd',
+        firefox: 'about:addons',
+        opera: 'opera://extensions',
+        other: ''
+      },
+      async openPermissions() {
+        const b = this.browser();
+        const url = this.permUrls[b];
+        if (!url) return app.showToast('En tu navegador abre la gestión de extensiones, entra a Tampermonkey y permite el acceso a web.whatsapp.com', 'info');
+        try { await navigator.clipboard.writeText(url); } catch (e) {}
+        const extra = b === 'firefox'
+          ? 'Firefox: abre Tampermonkey → Permisos y acepta el acceso a web.whatsapp.com.'
+          : 'Pégalo en una pestaña nueva (los navegadores no permiten abrirlo desde una web) y activa "Permitir scripts de usuario" o "Modo desarrollador", y el acceso al sitio web.whatsapp.com.';
+        app.showToast('Enlace copiado: ' + url + '. ' + extra, 'info');
+      },
+      testPopup() {
+        const w = window.open('about:blank', 'wa_popup_test', 'width=200,height=120');
+        if (!w) return app.showToast('Ventanas emergentes bloqueadas: pulsa el icono de bloqueo junto a la dirección y elige "Permitir"', 'error');
+        w.close();
+        app.showToast('Las ventanas emergentes están permitidas ✔', 'success');
+      },
+      browser() {
+        const ua = navigator.userAgent;
+        if (/Firefox\//.test(ua)) return 'firefox';
+        if (/Edg\//.test(ua)) return 'edge';
+        if (/OPR\//.test(ua)) return 'opera';
+        if (/Chrome\//.test(ua)) return 'chrome';
+        if (/Safari\//.test(ua)) return 'safari';
+        return 'other';
+      },
+      stores: {
+        chrome: 'https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo',
+        edge: 'https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd',
+        firefox: 'https://addons.mozilla.org/firefox/addon/tampermonkey/',
+        opera: 'https://addons.opera.com/extensions/details/tampermonkey-beta/',
+        safari: 'https://apps.apple.com/app/tampermonkey/id1482490089',
+        other: 'https://www.tampermonkey.net/'
+      },
+      installExtension() {
+        window.open(this.stores[this.browser()] || this.stores.other, '_blank');
+        app.showToast('Pulsa "Agregar" en la tienda y vuelve aquí', 'info');
+      },
+      installScript() {
+        const url = (storage.get('waScriptUrl') || '').trim();
+        if (/^https?:\/\/.+\.user\.js(\?.*)?$/i.test(url)) {
+          window.open(url, '_blank');
+          app.showToast('Pulsa "Instalar" en la pantalla de Tampermonkey', 'info');
+          return;
+        }
+        // Sin URL pública: se copia el script y se guía al usuario
+        this.copy();
+        this.download();
+        app.showToast('Script copiado y descargado. En Tampermonkey: Crear nuevo script → pegar → Ctrl+S (o arrastra el .user.js al navegador)', 'info');
+      },
+      saveUrl(v) { storage.save('waScriptUrl', (v || '').trim()); app.showToast('URL del script guardada', 'success'); },
+      getSteps() { return storage.get('waAutoSteps') || {}; },
+      setStep(n, on) { const st = this.getSteps(); st[n] = !!on; storage.save('waAutoSteps', st); this.renderSteps(); },
+      renderSteps() {
+        const st = this.getSteps();
+        let done = 0;
+        document.querySelectorAll('[data-wa-step]').forEach(cb => { cb.checked = !!st[cb.dataset.waStep]; if (cb.checked) done++; });
+        const bar = document.getElementById('wa-auto-progress'); if (bar) bar.style.width = (done / 5 * 100) + '%';
+        const lbl = document.getElementById('wa-auto-progress-label'); if (lbl) lbl.textContent = done === 5 ? 'Instalación completa ✔' : `Instalación: ${done} de 5 pasos`;
+        const br = document.getElementById('wa-auto-browser'); if (br) br.textContent = 'Navegador detectado: ' + this.browser();
+        const u = document.getElementById('wa-auto-script-url'); if (u && !u.value) u.value = storage.get('waScriptUrl') || '';
+      },
+      runTest() {
+        const own = (app.profile?.phone || '').replace(/\D/g, '');
+        if (!own) return app.showToast('Guarda tu número emisor arriba (Configuración de WhatsApp) para probar contigo mismo', 'error');
+        waApp.openChat(own, 'Prueba de envío automático ✔');
+        this.setStep(5, true);
+        app.showToast('Si el mensaje se envía solo, todo quedó listo', 'info');
+      },
+      toggle(on) {
+        storage.save('waSettings', { ...waSettings.get(), autosend: !!on });
+        app.showToast(on ? 'Envío automático activado' : 'Envío automático desactivado (se enviará a mano)', 'info');
+      },
+      async copy() {
+        try { await navigator.clipboard.writeText(this.script); app.showToast('Script copiado. Pégalo en Tampermonkey', 'success'); }
+        catch (e) {
+          const t = document.createElement('textarea'); t.value = this.script; document.body.appendChild(t); t.select();
+          document.execCommand('copy'); t.remove(); app.showToast('Script copiado. Pégalo en Tampermonkey', 'success');
+        }
+      },
+      download() {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([this.script], { type: 'text/javascript' }));
+        a.download = 'whatsapp-autosend.user.js';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      }
+    };
+
+    // ---------- WHATSAPP SETTINGS ----------
+    const waSettings = {
+      defaults: { min: 15, max: 25, daily: 100, signature: '', autosend: true },
+      applied: false,
+      get() { return { ...this.defaults, ...(storage.get('waSettings') || {}) }; },
+      load() {
+        const c = this.get();
+        document.getElementById('wa-set-phone').value = app.profile?.phone || '';
+        document.getElementById('wa-set-min').value = c.min;
+        document.getElementById('wa-set-max').value = c.max;
+        document.getElementById('wa-set-daily').value = c.daily;
+        document.getElementById('wa-set-signature').value = c.signature;
+        document.getElementById('wa-set-today').textContent = `Enviados hoy: ${this.sentToday()} de ${c.daily}`;
+        const at = document.getElementById('wa-autosend-toggle'); if (at) at.checked = !!c.autosend;
+      },
+      save(e) {
+        e.preventDefault();
+        const v = id => document.getElementById(id).value;
+        const min = Math.max(5, parseInt(v('wa-set-min')) || 15);
+        const cfg = { ...this.get(), min, max: Math.max(min, parseInt(v('wa-set-max')) || 25), daily: Math.max(1, parseInt(v('wa-set-daily')) || 100), signature: v('wa-set-signature').trim() };
+        storage.save('waSettings', cfg);
+        app.profile.phone = v('wa-set-phone').replace(/\D/g, '');
+        storage.save('profile', app.profile);
+        this.applied = false;
+        this.load();
+        waApp.updateConnectionUI();
+        app.showToast('Configuración de WhatsApp guardada', 'success');
+      },
+      applyDelays() {
+        if (this.applied) return;
+        const c = this.get();
+        document.getElementById('wa-min-delay').value = c.min;
+        document.getElementById('wa-max-delay').value = c.max;
+        waApp.updateDelayIndicator();
+        this.applied = true;
+      },
+      sentToday() {
+        const r = storage.get('waSent');
+        return r && r.date === new Date().toDateString() ? r.n : 0;
+      },
+      addSent() { storage.save('waSent', { date: new Date().toDateString(), n: this.sentToday() + 1 }); }
     };
 
     // ---------- EMAIL CAMPAIGNS CONTROLLER ----------
