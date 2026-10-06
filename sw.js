@@ -1,6 +1,6 @@
 // Service worker - Nexos B2B Management
 // Sube el número de versión cada vez que publiques cambios para forzar la actualización.
-const VERSION = 'nexos-v1';
+const VERSION = 'nexos-v2';
 const SHELL = [
   './',
   './index.html',
