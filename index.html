@@ -92,6 +92,9 @@
     .view-section.active {
       display: block;
     }
+  
+    #tpl-editor[data-channel="email"] .tpl-focus:focus { border-color: #3b82f6; }
+    #tpl-editor[data-channel="whatsapp"] .tpl-focus:focus { border-color: #10b981; }
   </style>
 <style>
 .wa-tab-content:not(.hidden){animation:waFade .35s ease both}
@@ -766,6 +769,10 @@ else go.disabled=false;pw.focus()},30)};
                   id="wa-campaign-list"
                   class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-emerald-500"
                 ></select>
+                <div class="flex flex-wrap items-center gap-2 mt-2">
+                  <button type="button" onclick="phoneFixer.open()" class="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-semibold transition-all">🔧 Revisar y corregir números</button>
+                  <span class="text-[10px] text-slate-500">Detecta números mal escritos antes de enviar. Los inválidos se saltean solos.</span>
+                </div>
               </div>
             </div>
 
@@ -824,6 +831,11 @@ else go.disabled=false;pw.focus()},30)};
                   <button type="button" onclick="waApp.insertTag('{{empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{empresa}}</button>
                   <button type="button" onclick="waApp.insertTag('{{barrio}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{barrio}}</button>
                 </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="wa-saved-template" onchange="waApp.loadSaved(this.value)" class="flex-1 min-w-[200px] px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs"></select>
+                <button type="button" onclick="app.navigate('templates'); templatesApp.createNew('whatsapp')" class="px-3 py-2 rounded-xl bg-emerald-600/15 hover:bg-emerald-600/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">+ Crear plantilla</button>
               </div>
 
               <textarea
@@ -1113,71 +1125,108 @@ Quedo a tu disposición,
       <!-- ==================== 5. TEMPLATES VIEW ==================== -->
       <section id="view-templates" class="view-section space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div class="lg:col-span-1 space-y-3">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-bold text-white uppercase tracking-wider">Plantillas Guardadas</span>
-              <button onclick="templatesApp.createNew()" class="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nueva
-              </button>
+          <!-- Columna izquierda: lista -->
+          <div class="lg:col-span-1 space-y-4">
+            <div>
+              <span class="text-xs font-bold text-white uppercase tracking-wider block mb-2">Crear plantilla</span>
+              <div class="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                <button type="button" onclick="templatesApp.createNew('email')" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/30 text-blue-300 text-xs font-bold transition-all text-left">
+                  <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2" stroke-width="2"/><polyline points="3 7 12 13 21 7" stroke-width="2"/></svg>
+                  <span class="leading-tight">Nueva de Correo<span class="block font-normal text-[10px] text-blue-300/60">Con asunto y cuerpo</span></span>
+                </button>
+                <button type="button" onclick="templatesApp.createNew('whatsapp')" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-emerald-600/15 hover:bg-emerald-600/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition-all text-left">
+                  <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span class="leading-tight">Nueva de WhatsApp<span class="block font-normal text-[10px] text-emerald-300/60">Mensaje de chat</span></span>
+                </button>
+              </div>
             </div>
-            <div id="templates-list-container" class="space-y-3"></div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Mis plantillas</span>
+              </div>
+              <div id="tpl-filters" class="flex gap-1 p-1 rounded-xl bg-slate-900/60 border border-slate-800 mb-3"></div>
+              <div id="templates-list-container" class="space-y-2.5"></div>
+            </div>
           </div>
 
+          <!-- Columna derecha: editor -->
           <div class="lg:col-span-3">
-            <div class="rounded-3xl bg-slate-900/40 border border-slate-800 p-6 backdrop-blur-xl space-y-4">
-              <div class="border-b border-slate-800 pb-4">
-                <h3 class="text-base font-bold text-white" id="template-editor-heading">Editor de Plantilla</h3>
-                <p class="text-xs text-slate-400">
-                  Inserta etiquetas dinámicas como <code class="text-blue-400 font-mono">{{nombre}}</code>, <code class="text-blue-400 font-mono">{{empresa}}</code>, <code class="text-blue-400 font-mono">{{contacto}}</code> y <code class="text-blue-400 font-mono">{{barrio}}</code>.
-                </p>
-              </div>
+            <div id="tpl-editor" class="rounded-3xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl overflow-hidden">
+              <div id="tpl-banner" class="px-6 py-3 border-b flex items-center gap-3"></div>
 
-              <form onsubmit="templatesApp.save(event)" class="space-y-4">
-                <div>
-                  <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre de la Plantilla *</label>
-                  <input type="text" required id="tpl-name" class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500" />
-                </div>
-
-                <div>
-                  <label class="block text-xs font-semibold text-slate-300 mb-1.5">Asunto del Correo (Subject) *</label>
-                  <div class="flex gap-2 mb-1">
-                    <input type="text" required id="tpl-subject" class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500" />
-                  </div>
-                  <div class="flex gap-1.5 mt-1.5">
-                    <button type="button" onclick="templatesApp.insertTag('subject', '{{nombre}}')" class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">+{{nombre}}</button>
-                    <button type="button" onclick="templatesApp.insertTag('subject', '{{empresa}}')" class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">+{{empresa}}</button>
-                    <button type="button" onclick="templatesApp.insertTag('subject', '{{barrio}}')" class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">+{{barrio}}</button>
+              <form onsubmit="templatesApp.save(event)" class="p-6 space-y-5">
+                <div class="flex flex-wrap items-end gap-4">
+                  <div class="flex-1 min-w-[220px]">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre de la plantilla *</label>
+                    <input type="text" required id="tpl-name" maxlength="80" placeholder="Ej. Primer contacto – inmobiliarias" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none tpl-focus" />
+                    <p class="text-[10px] text-slate-500 mt-1">Solo es para que la encuentres vos; tus contactos no lo ven.</p>
                   </div>
                 </div>
 
+                <!-- Ejemplos para empezar (solo plantillas nuevas) -->
+                <div id="tpl-starters-wrap" class="hidden">
+                  <span class="text-[11px] font-semibold text-slate-400 block mb-1.5">¿No sabés por dónde arrancar? Empezá desde un ejemplo:</span>
+                  <div id="tpl-starters" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Asunto (solo correo) -->
+                <div id="tpl-subject-wrap">
+                  <label class="block text-xs font-semibold text-slate-300 mb-1.5">Asunto del correo *</label>
+                  <input type="text" id="tpl-subject" oninput="templatesApp.onInput()" onfocus="templatesApp.field='subject'" placeholder="Ej. Una idea para {{empresa}}" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none tpl-focus" />
+                </div>
+
+                <!-- Variables -->
+                <div>
+                  <div class="flex items-baseline justify-between mb-1.5">
+                    <label class="block text-xs font-semibold text-slate-300">Datos que se completan solos</label>
+                    <span id="tpl-vars-target" class="text-[10px] text-slate-500"></span>
+                  </div>
+                  <div id="tpl-vars" class="flex flex-wrap gap-1.5"></div>
+                </div>
+
+                <!-- Cuerpo -->
                 <div class="space-y-2">
-                  <div class="flex items-center justify-between">
-                    <label class="block text-xs font-semibold text-slate-300">Cuerpo del Correo (HTML o Texto) *</label>
-                    <div class="flex gap-1.5">
-                      <button type="button" onclick="templatesApp.insertTag('body', '{{nombre}}')" class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">+{{nombre}}</button>
-                      <button type="button" onclick="templatesApp.insertTag('body', '{{empresa}}')" class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">+{{empresa}}</button>
-                      <button type="button" onclick="templatesApp.insertTag('body', '{{contacto}}')" class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">+{{contacto}}</button>
-                      <button type="button" onclick="templatesApp.insertTag('body', '{{barrio}}')" class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px] font-mono border border-blue-500/20">+{{barrio}}</button>
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <label id="tpl-body-label" class="block text-xs font-semibold text-slate-300">Mensaje *</label>
+                    <div id="tpl-wa-toolbar" class="hidden items-center gap-1">
+                      <button type="button" title="Negrita" onclick="templatesApp.wrap('*')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-extrabold">B</button>
+                      <button type="button" title="Cursiva" onclick="templatesApp.wrap('_')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs italic font-semibold">I</button>
+                      <button type="button" title="Tachado" onclick="templatesApp.wrap('~')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs line-through">S</button>
+                      <span class="w-px h-5 bg-slate-700 mx-1"></span>
+                      <button type="button" onclick="templatesApp.emoji('👋')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">👋</button>
+                      <button type="button" onclick="templatesApp.emoji('😊')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">😊</button>
+                      <button type="button" onclick="templatesApp.emoji('👍')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">👍</button>
+                      <button type="button" onclick="templatesApp.emoji('📞')" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm">📞</button>
                     </div>
                   </div>
 
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <textarea rows="10" required id="tpl-body" oninput="templatesApp.renderPreview()" class="w-full p-3.5 rounded-2xl bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono leading-relaxed focus:outline-none focus:border-blue-500"></textarea>
-                    
-                    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col justify-between">
-                      <div class="space-y-2">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block border-b border-slate-800 pb-1">Vista Previa Renderizada</span>
-                        <div id="tpl-preview-box" class="text-xs text-slate-300 whitespace-pre-wrap font-sans leading-relaxed"></div>
+                    <div>
+                      <textarea rows="12" required id="tpl-body" oninput="templatesApp.onInput()" onfocus="templatesApp.field='body'" class="w-full p-3.5 rounded-2xl bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono leading-relaxed focus:outline-none tpl-focus"></textarea>
+                      <div class="flex items-center justify-between mt-1">
+                        <span id="tpl-hint" class="text-[10px] text-slate-500"></span>
+                        <span id="tpl-count" class="text-[10px] text-slate-500"></span>
                       </div>
+                    </div>
+
+                    <div>
+                      <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Así lo va a ver el contacto</span>
+                        <label class="flex items-center gap-1.5 text-[10px] text-slate-400 cursor-pointer select-none">
+                          <input type="checkbox" id="tpl-noname" onchange="templatesApp.renderPreview()" class="rounded border-slate-600 bg-slate-900" />
+                          Probar sin nombre
+                        </label>
+                      </div>
+                      <div id="tpl-preview"></div>
                       <span class="text-[10px] text-slate-500 mt-2 block">* Ejemplo con datos simulados</span>
                     </div>
                   </div>
                 </div>
 
-                <div class="flex justify-end gap-3 pt-2">
-                  <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/25 transition-all">
-                    Guardar Plantilla
-                  </button>
+                <div class="flex flex-wrap justify-end gap-3 pt-1">
+                  <button type="button" id="tpl-dup-btn" onclick="templatesApp.duplicate()" class="hidden px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all">Duplicar</button>
+                  <button type="submit" id="tpl-save-btn" class="px-6 py-2.5 rounded-xl text-white text-xs font-semibold shadow-lg transition-all">Guardar plantilla</button>
                 </div>
               </form>
             </div>
@@ -1729,6 +1778,11 @@ self.addEventListener('fetch', (e) => {
             ls.forEach(l => { if (!l.channel) l.channel = (/whatsapp/i.test(l.name + ' ' + (l.description || '')) && !(l.contacts || []).some(c => c.email)) ? 'wa' : 'email'; });
             return ls;
           }
+          if (key === 'templates' && val) {
+            const ts = JSON.parse(val);
+            ts.forEach(t => { if (!t.channel) t.channel = 'email'; });
+            return ts;
+          }
           return val ? JSON.parse(val) : null;
         } catch(e) { return null; }
       }
@@ -1744,23 +1798,70 @@ self.addEventListener('fetch', (e) => {
     const storage = new StorageService();
 
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-    // Normaliza teléfonos argentinos a 549 + área + número (quita 0 inicial y el 15). Otros países: se deja tal cual.
+    // Valida y corrige teléfonos. Devuelve { ok, phone, changed, reason, note }.
+    // Argentina: 549 + área + número (quita 0 inicial, 15, 54 y 9 repetidos). Otros países: se respeta si tiene + / 00 o es largo.
+    function checkPhone(raw, defaultArea) {
+      const txt = String(raw == null ? '' : raw).trim();
+      const hasPlus = txt.startsWith('+');
+      let d = txt.replace(/\D/g, '');
+      const digits = d;
+      const bad = reason => ({ ok: false, phone: '', changed: false, reason });
+      const good = (phone, note) => ({ ok: true, phone, changed: phone !== digits, reason: '', note: note || '' });
+      if (!d) return bad('Sin número');
+      const intl = hasPlus || d.startsWith('00');
+      d = d.replace(/^00/, '');
+      if (/^(\d)\1+$/.test(d)) return bad('Número inventado (todos los dígitos iguales)');
+      if (d.length > 15) return bad('Demasiados dígitos (' + d.length + '); ¿son dos números juntos?');
+      if (d.length < 8) return bad('Muy corto (' + d.length + ' dígitos)');
+
+      const arNational = nat => {
+        nat = nat.replace(/^9/, '').replace(/^0+/, '');
+        // Con el 15 puesto, el número mide 12 dígitos: área (2 si es 11, si no 3 o 4) + 15 + abonado.
+        if (nat.length === 12) for (const a of (nat.startsWith('11') ? [2] : [3, 4])) if (nat.substr(a, 2) === '15') { nat = nat.slice(0, a) + nat.slice(a + 2); break; }
+        return nat;
+      };
+      const checkAr = nat => {
+        if (nat.length < 10) return bad('Le faltan dígitos (tiene ' + nat.length + ' sin el 54 y el 9, deberían ser 10)');
+        if (nat.length > 10) return bad('Le sobran dígitos (tiene ' + nat.length + ' sin el 54 y el 9, deberían ser 10)');
+        if (!/^(11|[23])/.test(nat)) return bad('Código de área inexistente (empieza con ' + nat.slice(0, 2) + ')');
+        return good('549' + nat);
+      };
+
+      // Con código de país argentino (54...)
+      if (d.startsWith('54') && d.length >= 11) return checkAr(arNational(d.slice(2)));
+      // Otro país indicado con + o 00
+      if (intl) return good(d, 'Número internacional');
+      // Sin código de país
+      const nat = arNational(d);
+      if (nat.length === 10) return checkAr(nat);
+      if (nat.length >= 6 && nat.length <= 8 && defaultArea) {
+        const area = String(defaultArea).replace(/\D/g, '').replace(/^0+/, '');
+        if (area && (area + nat).length === 10) return checkAr(area + nat);
+      }
+      if (nat.length >= 11) return good(d, 'Parece internacional, revisalo');
+      if (nat.length === 9) return bad('Le falta un dígito (tiene 9, deberían ser 10 con el código de área)');
+      return bad('Falta el código de área (tiene ' + nat.length + ' dígitos)');
+    }
     function normPhone(raw) {
-      const orig = String(raw || '').replace(/\D/g, '');
-      if (!orig) return '';
-      let d = orig.replace(/^00/, '');
-      if (d.startsWith('54')) d = d.slice(2).replace(/^9/, '');
-      d = d.replace(/^0+/, '');
-      for (const a of [2, 3, 4]) if (d.length === a + 10 && d.substr(a, 2) === '15') { d = d.slice(0, a) + d.slice(a + 2); break; }
-      return d.length === 10 ? '549' + d : orig;
+      const r = checkPhone(raw);
+      return r.ok ? r.phone : String(raw || '').replace(/\D/g, '');
+    }
+
+    // ---------- NOMBRE: si el contacto no tiene nombre, el saludo queda natural ("Hola, ¿cómo estás?") ----------
+    function fillNombre(text, name) {
+      name = String(name || '').trim();
+      if (name) return (text || '').replace(/\{\{nombre\}\}/g, name);
+      return (text || '')
+        .replace(/(Estimado\/a|Estimado|Estimada)\s+\*?_?\{\{nombre\}\}_?\*?/gi, 'Hola')
+        .replace(/[ \t]*[-–—,:][ \t]*\*?_?\{\{nombre\}\}_?\*?[ \t]*$/gm, '')
+        .replace(/[ \t]*\*?_?\{\{nombre\}\}_?\*?/g, '');
     }
 
     // ---------- MAIL SERVICE: envío real de correos (pruebas y futuras campañas) ----------
     const mailService = {
       fillMerge(text, data) {
         data = data || {};
-        return (text || '')
-          .replace(/\{\{nombre\}\}/g, data.name || 'Nombre de Ejemplo')
+        return fillNombre(text, data.name)
           .replace(/\{\{empresa\}\}/g, data.company || 'Empresa de Ejemplo')
           .replace(/\{\{contacto\}\}/g, data.contactRole || 'Cargo de Ejemplo')
           .replace(/\{\{barrio\}\}/g, data.neighborhood || 'Zona de Ejemplo')
@@ -2002,7 +2103,7 @@ self.addEventListener('fetch', (e) => {
           whatsapp: { title: 'Campañas de WhatsApp Directas', sub: 'Envío automatizado 1 a 1 desde tu propio número con cadencia anti-bloqueo y personalización' },
           campaigns: { title: 'Gestión de Campañas de Email', sub: 'Monitorea, programa y controla la ejecución de tus envíos masivos' },
           contacts: { title: 'Contactos y Audiencias B2B', sub: 'Importa archivos CSV, mapea variables dinámicas y segmenta tus destinatarios' },
-          templates: { title: 'Plantillas de Correo Dinámicas', sub: 'Diseña correos en HTML con etiquetas dinámicas y vista previa interactiva' },
+          templates: { title: 'Plantillas de Correo y WhatsApp', sub: 'Creá mensajes con datos que se completan solos y mirá cómo los va a ver cada contacto' },
           stats: { title: 'Estadísticas de Campañas', sub: 'Rendimiento de Email y WhatsApp: envíos, respuestas y mejores horarios' },
         settings: { title: 'Configuración & Marca Blanca', sub: 'Administra tus credenciales de envío, marca y datos de tu empresa' },
           tutorial: { title: 'Manual de Uso y Guía Oficial', sub: 'Documentación integral paso a paso para prospección B2B y campañas masivas' }
@@ -2106,7 +2207,10 @@ self.addEventListener('fetch', (e) => {
         listSelect.innerHTML = chOptions('email', '— No tienes listas con emails: impórtalas en Contactos —');
 
         const tplSelect = document.getElementById('modal-camp-template');
-        tplSelect.innerHTML = templates.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+        const emailTpls = templates.filter(t => t.channel === 'email');
+        tplSelect.innerHTML = emailTpls.length
+          ? emailTpls.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')
+          : '<option value="">— No tenés plantillas de correo: creá una en Plantillas —</option>';
 
         const accSelect = document.getElementById('modal-camp-account');
         const accs = storage.get('smtpConfigs') || [];
@@ -2187,6 +2291,140 @@ self.addEventListener('fetch', (e) => {
       }
     };
 
+
+    // ---------- CORRECTOR DE NÚMEROS (WhatsApp) ----------
+    const phoneFixer = {
+      listId: null,
+      rows: [],
+
+      getArea() { return String(storage.get('waDefaultArea') || ''); },
+      setArea(v) {
+        storage.save('waDefaultArea', String(v || '').replace(/\D/g, ''));
+        this.recompute(true);
+      },
+
+      open() {
+        const listId = document.getElementById('wa-campaign-list').value;
+        const list = (storage.get('lists') || []).find(l => l.id === listId);
+        if (!list) { app.showToast('Elegí primero una lista de contactos', 'error'); return; }
+        this.listId = listId;
+        this.listName = list.name;
+        this.rows = (list.contacts || []).map((c, i) => ({ i, name: c.name || '', company: c.company || '', email: c.email || '', original: String(c.phone || ''), value: String(c.phone || ''), edited: false, removed: false }))
+          .filter(r => r.original.replace(/\D/g, '').length > 0);
+        document.getElementById('pf-area').value = this.getArea();
+        document.getElementById('modal-phone-fixer').classList.remove('hidden');
+        this.recompute(true);
+      },
+
+      close() { document.getElementById('modal-phone-fixer').classList.add('hidden'); },
+
+      analyze(r) {
+        if (r.removed) return { ok: false, removed: true, reason: 'Se va a quitar el número', phone: '' };
+        return checkPhone(r.value, this.getArea());
+      },
+
+      recompute(rerender) {
+        this.rows.forEach(r => { r.res = this.analyze(r); });
+        const ok = this.rows.filter(r => r.res.ok && !r.res.changed).length;
+        const fixed = this.rows.filter(r => r.res.ok && r.res.changed).length;
+        const bad = this.rows.filter(r => !r.res.ok && !r.removed).length;
+        const pill = (cls, t) => `<span class="px-2.5 py-1 rounded-lg border ${cls}">${t}</span>`;
+        document.getElementById('pf-summary').innerHTML =
+          pill('bg-emerald-500/10 border-emerald-500/30 text-emerald-300', `✅ ${ok} bien`) +
+          pill('bg-blue-500/10 border-blue-500/30 text-blue-300', `🔧 ${fixed} se corrigen solos`) +
+          pill('bg-rose-500/10 border-rose-500/30 text-rose-300', `❌ ${bad} inválidos`);
+        document.getElementById('pf-subtitle').textContent = `Lista: ${this.listName || ''} · ${this.rows.length} contactos con número`;
+        if (rerender) this.renderRows();
+      },
+
+      renderRows() {
+        const body = document.getElementById('pf-body');
+        const problem = this.rows.filter(r => !r.res.ok || r.res.changed || r.edited || r.removed);
+        if (!problem.length) {
+          body.innerHTML = '<div class="py-10 text-center text-sm text-emerald-300">🎉 Todos los números están perfectos.</div>';
+          return;
+        }
+        const order = r => (!r.res.ok && !r.removed ? 0 : r.res.changed ? 1 : 2);
+        problem.sort((a, b) => order(a) - order(b));
+        const MAX = 200;
+        body.innerHTML = problem.slice(0, MAX).map(r => this.rowHtml(r)).join('') +
+          (problem.length > MAX ? `<p class="text-center text-[11px] text-slate-500 py-2">Mostrando ${MAX} de ${problem.length}. Guardá y volvé a abrir para ver el resto.</p>` : '');
+      },
+
+      statusHtml(r) {
+        const x = r.res;
+        if (r.removed) return '<span class="text-slate-400">🗑️ Se quita el número</span>';
+        if (x.ok && x.changed) return `<span class="text-blue-300">🔧 Se corrige a <b class="font-mono">+${x.phone}</b></span>`;
+        if (x.ok) return `<span class="text-emerald-300">✅ Válido <span class="font-mono">+${x.phone}</span></span>`;
+        return `<span class="text-rose-300">❌ ${esc(x.reason)}</span>`;
+      },
+
+      rowHtml(r) {
+        const border = r.removed ? 'border-slate-800 opacity-60' : !r.res.ok ? 'border-rose-500/30' : r.res.changed ? 'border-blue-500/30' : 'border-emerald-500/30';
+        const who = r.name || r.company || r.email || '(sin nombre)';
+        return `<div id="pf-row-${r.i}" class="p-3 rounded-2xl bg-slate-950 border ${border} flex flex-wrap items-center gap-3">
+          <div class="w-44 min-w-0">
+            <div class="text-xs font-semibold text-white truncate">${esc(who)}</div>
+            <div class="text-[10px] text-slate-500 truncate">${esc(r.company && r.name ? r.company : r.email)}</div>
+          </div>
+          <input type="text" value="${esc(r.value)}" ${r.removed ? 'disabled' : ''} oninput="phoneFixer.edit(${r.i}, this.value)" class="w-44 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-emerald-500" />
+          <div id="pf-status-${r.i}" class="flex-1 min-w-[180px] text-[11px]">${this.statusHtml(r)}</div>
+          <button type="button" onclick="phoneFixer.toggleRemove(${r.i})" class="text-[11px] text-slate-400 hover:text-rose-300">${r.removed ? 'Deshacer' : 'Quitar'}</button>
+        </div>`;
+      },
+
+      edit(i, v) {
+        const r = this.rows.find(x => x.i === i);
+        if (!r) return;
+        r.value = v; r.edited = true;
+        r.res = this.analyze(r);
+        const el = document.getElementById('pf-status-' + i);
+        if (el) el.innerHTML = this.statusHtml(r);
+        this.recompute(false);
+      },
+
+      toggleRemove(i) {
+        const r = this.rows.find(x => x.i === i);
+        if (!r) return;
+        r.removed = !r.removed;
+        this.recompute(true);
+      },
+
+      removeInvalid() {
+        this.rows.forEach(r => { if (!r.res.ok && !r.removed) r.removed = true; });
+        this.recompute(true);
+      },
+
+      save() {
+        const lists = storage.get('lists') || [];
+        const list = lists.find(l => l.id === this.listId);
+        if (!list) { this.close(); return; }
+        let fixed = 0, removed = 0, edited = 0;
+        this.rows.forEach(r => {
+          const c = list.contacts[r.i];
+          if (!c) return;
+          const res = this.analyze(r);
+          if (r.removed) { c.phone = ''; removed++; return; }
+          if (res.ok) {
+            if (c.phone !== res.phone) { c.phone = res.phone; r.edited ? edited++ : fixed++; }
+          } else if (r.edited && r.value !== r.original) {
+            c.phone = r.value; edited++;
+          }
+        });
+        storage.save('lists', lists);
+        const sel = document.getElementById('wa-campaign-list');
+        const prev = sel.value;
+        sel.innerHTML = chOptions('wa', '— No tienes listas con teléfonos: importa contactos arriba —');
+        if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+        this.close();
+        const parts = [];
+        if (fixed) parts.push(`${fixed} corregido${fixed > 1 ? 's' : ''}`);
+        if (edited) parts.push(`${edited} editado${edited > 1 ? 's' : ''}`);
+        if (removed) parts.push(`${removed} quitado${removed > 1 ? 's' : ''}`);
+        app.showToast(parts.length ? 'Números guardados: ' + parts.join(', ') : 'No había cambios para guardar', parts.length ? 'success' : 'info');
+      }
+    };
+
     // ---------- WHATSAPP OUTREACH CONTROLLER ----------
     const WA_PRESETS = [
       {
@@ -2213,6 +2451,24 @@ self.addEventListener('fetch', (e) => {
         const select = document.getElementById('wa-campaign-list');
         if (select) {
           select.innerHTML = chOptions('wa', '— No tienes listas con teléfonos: importa contactos arriba —');
+        }
+        this.fillSaved();
+      },
+
+      fillSaved() {
+        const sel = document.getElementById('wa-saved-template');
+        if (!sel) return;
+        const ts = (storage.get('templates') || []).filter(t => t.channel === 'whatsapp');
+        sel.innerHTML = '<option value="">' + (ts.length ? '📂 Cargar una plantilla de WhatsApp guardada…' : 'Todavía no guardaste plantillas de WhatsApp') + '</option>' +
+          ts.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+      },
+
+      loadSaved(id) {
+        if (!id) return;
+        const t = (storage.get('templates') || []).find(x => x.id === id);
+        if (t) {
+          document.getElementById('wa-message-template').value = t.body;
+          app.showToast('Plantilla "' + t.name + '" cargada', 'info');
         }
       },
 
@@ -2322,11 +2578,13 @@ self.addEventListener('fetch', (e) => {
 
       handleSendTest(e) {
         e.preventDefault();
-        const phone = document.getElementById('wa-test-phone').value.replace(/\D/g, '');
+        const phoneRaw = document.getElementById('wa-test-phone').value;
         const message = document.getElementById('wa-test-message').value;
+        const chk = checkPhone(phoneRaw, phoneFixer.getArea());
+        const phone = chk.phone;
 
-        if (!phone) {
-          app.showToast('Ingresa un número de teléfono válido', 'error');
+        if (!chk.ok) {
+          app.showToast('Número no válido: ' + chk.reason, 'error');
           return;
         }
 
@@ -2365,6 +2623,9 @@ self.addEventListener('fetch', (e) => {
           return;
         }
 
+        const badCount = contacts.filter(c => !checkPhone(c.phone, phoneFixer.getArea()).ok).length;
+        if (badCount) app.showToast(`${badCount} número${badCount > 1 ? 's' : ''} inválido${badCount > 1 ? 's' : ''}: se van a saltear. Podés corregirlos con "Revisar números".`, 'info');
+
         document.getElementById('wa-campaign-form').classList.add('hidden');
         document.getElementById('wa-monitor-box').classList.remove('hidden');
 
@@ -2390,7 +2651,35 @@ self.addEventListener('fetch', (e) => {
         this.dispatchNextWhatsApp();
       },
 
+      // Envoltorio a prueba de fallos: si algo explota con un contacto, lo marca como fallido y sigue con el siguiente.
       dispatchNextWhatsApp() {
+        if (!this.campaignState || this.campaignState.status !== 'RUNNING') return;
+        const state = this.campaignState;
+        const idx = state.currentIndex;
+        try {
+          this.dispatchOne();
+        } catch (err) {
+          console.error('Error en envío WhatsApp', err);
+          if (state.status !== 'RUNNING') return;
+          const ct = state.contacts[idx] || {};
+          if (state.currentIndex === idx) {
+            state.failed++;
+            state.currentIndex++;
+            try { document.getElementById('wa-count-failed').textContent = state.failed; } catch (_) {}
+            try { analytics.waEvent(state, ct, 'FAILED', 'Error: ' + ((err && err.message) || 'desconocido')); } catch (_) {}
+          }
+          try {
+            const terminal = document.getElementById('wa-terminal-logs');
+            const l = document.createElement('div');
+            l.className = 'flex items-start gap-2 text-rose-300';
+            l.innerHTML = `<span class="text-slate-500">[${new Date().toLocaleTimeString()}]</span> <span>Error con ${waImport.esc(ct.name || ct.phone || 'un contacto')}: ${waImport.esc((err && err.message) || 'desconocido')}. Sigo con el siguiente.</span>`;
+            terminal.appendChild(l); terminal.scrollTop = terminal.scrollHeight;
+          } catch (_) {}
+          this.runningTimeout = setTimeout(() => this.dispatchNextWhatsApp(), 300);
+        }
+      },
+
+      dispatchOne() {
         if (!this.campaignState || this.campaignState.status !== 'RUNNING') return;
         
         const state = this.campaignState;
@@ -2408,8 +2697,7 @@ self.addEventListener('fetch', (e) => {
         const contact = state.contacts[state.currentIndex];
         const timeStr = new Date().toLocaleTimeString();
 
-        let message = state.templateText
-          .replace(/\{\{nombre\}\}/g, contact.name || 'Cliente')
+        let message = fillNombre(state.templateText, contact.name)
           .replace(/\{\{empresa\}\}/g, contact.company || 'su empresa')
           .replace(/\{\{barrio\}\}/g, contact.neighborhood || 'la zona')
           .replace(/\{\{contacto\}\}/g, contact.contactRole || 'Administrador')
@@ -2426,17 +2714,18 @@ self.addEventListener('fetch', (e) => {
           terminal.scrollTop = terminal.scrollHeight;
         };
 
-        let rawPhone = String(contact.phone || '').replace(/\D/g, '');
-        if (!rawPhone) {
+        const chk = checkPhone(contact.phone, phoneFixer.getArea());
+        if (!chk.ok) {
+          // Número inválido: se saltea al instante (sin esperar el retardo) y sigue con el siguiente.
           state.failed++;
           state.currentIndex++;
           document.getElementById('wa-count-failed').textContent = state.failed;
-          analytics.waEvent(state, contact, 'FAILED', 'Sin teléfono');
-          addLog('text-rose-300', `Sin teléfono: ${waImport.esc(contact.name || contact.email)}`);
+          analytics.waEvent(state, contact, 'FAILED', 'Número inválido: ' + chk.reason);
+          addLog('text-rose-300', `Salteado ${waImport.esc(contact.name || contact.email || '(sin nombre)')} · "${waImport.esc(contact.phone || '')}" → ${waImport.esc(chk.reason)}`);
           this.runningTimeout = setTimeout(() => this.dispatchNextWhatsApp(), 0);
           return;
         }
-        const fullPhone = normPhone(rawPhone);
+        const fullPhone = chk.phone;
 
         const cfg = waSettings.get();
         if (waSettings.sentToday() >= cfg.daily) {
@@ -2459,7 +2748,7 @@ self.addEventListener('fetch', (e) => {
         analytics.waLive(state);
 
         analytics.waEvent(state, contact, 'SENT', '');
-        addLog('text-emerald-300', `Chat abierto para ${waImport.esc(contact.name || contact.email)} (+${fullPhone})`);
+        addLog('text-emerald-300', `Chat abierto para ${waImport.esc(contact.name || contact.company || contact.email || '(sin nombre)')} (+${fullPhone})`);
 
         const delay = Math.floor(Math.random() * (state.maxDelay - state.minDelay + 1) + state.minDelay) * 1000;
         this.runningTimeout = setTimeout(() => {
@@ -3494,105 +3783,318 @@ self.addEventListener('fetch', (e) => {
     };
 
     // ---------- TEMPLATES APP CONTROLLER ----------
+    const TPL_ICON = {
+      email: '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2" stroke-width="2"/><polyline points="3 7 12 13 21 7" stroke-width="2"/></svg>',
+      whatsapp: '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'
+    };
+    const TPL_THEME = {
+      email:    { label: 'Correo',   badge: 'bg-blue-500/15 text-blue-300 border-blue-500/30', bar: 'bg-blue-500', sel: 'bg-blue-600/15 border-blue-500', chip: 'bg-blue-500/10 text-blue-300 border-blue-500/25 hover:bg-blue-500/20', btn: 'bg-blue-600 hover:bg-blue-500 shadow-blue-500/25', banner: 'bg-blue-500/10 border-blue-500/20 text-blue-300', pill: 'bg-blue-600 text-white' },
+      whatsapp: { label: 'WhatsApp', badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', bar: 'bg-emerald-500', sel: 'bg-emerald-600/15 border-emerald-500', chip: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25 hover:bg-emerald-500/20', btn: 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/25', banner: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300', pill: 'bg-emerald-600 text-white' }
+    };
+    const TPL_VARS = [
+      { tag: '{{nombre}}',     icon: '👤', label: 'Nombre',        hint: 'Nombre del contacto' },
+      { tag: '{{empresa}}',    icon: '🏢', label: 'Empresa',       hint: 'Empresa del contacto' },
+      { tag: '{{barrio}}',     icon: '📍', label: 'Barrio / zona', hint: 'Barrio o zona del contacto' },
+      { tag: '{{contacto}}',   icon: '💼', label: 'Cargo',         hint: 'Cargo del contacto' },
+      { tag: '{{mi_nombre}}',  icon: '✍️', label: 'Tu nombre',     hint: 'Tu nombre (de Configuración)' },
+      { tag: '{{mi_empresa}}', icon: '🏷️', label: 'Tu empresa',    hint: 'Tu empresa (de Configuración)' },
+      { tag: '{{mi_email}}',   icon: '📧', label: 'Tu email',      hint: 'Tu email (de Configuración)', emailOnly: true }
+    ];
+    const TPL_STARTERS = {
+      email: [
+        { name: 'Propuesta comercial', subject: 'Una idea para {{empresa}}', body: 'Hola {{nombre}},\n\nTe contacto de {{mi_empresa}}. Ayudamos a empresas en {{barrio}} a optimizar sus procesos comerciales y de prospección.\n\n¿Tendrías 5 minutos para coordinar una breve demo virtual?\n\nSaludos,\n{{mi_nombre}}\n{{mi_email}}' },
+        { name: 'Seguimiento', subject: '¿Pudiste ver mi mensaje, {{nombre}}?', body: 'Hola {{nombre}},\n\nTe escribo para retomar mi mensaje anterior. Me gustaría contarte cómo podemos ayudar a {{empresa}}.\n\nSi preferís, coordinamos una llamada corta cuando te quede cómodo.\n\nUn saludo,\n{{mi_nombre}}' }
+      ],
+      whatsapp: [
+        { name: 'Propuesta comercial', body: WA_PRESETS_TEXT(0) },
+        { name: 'Aviso express', body: WA_PRESETS_TEXT(1) },
+        { name: 'Seguimiento amable', body: 'Hola *{{nombre}}*, ¿cómo andás? 👋\n\nTe escribo para retomar mi mensaje anterior sobre *{{empresa}}*.\n\n¿Te parece que coordinemos una llamada corta esta semana?\n\nUn abrazo,\n*{{mi_nombre}}*' }
+      ]
+    };
+    function WA_PRESETS_TEXT(i) { return (typeof WA_PRESETS !== 'undefined' && WA_PRESETS[i]) ? WA_PRESETS[i].text : ''; }
+
     const templatesApp = {
       selectedId: null,
+      creating: false,
+      channel: 'email',
+      filter: 'all',
+      field: 'body',
+
+      all() { return storage.get('templates') || []; },
 
       render() {
-        const templates = storage.get('templates') || [];
-        if (templates.length > 0 && !this.selectedId) {
-          this.selectedId = templates[0].id;
+        const all = this.all();
+        if (!this.selectedId && !this.creating) {
+          if (all.length) this.selectedId = all[0].id;
+          else { this.creating = true; this.channel = 'email'; }
         }
+        const sel = all.find(t => t.id === this.selectedId);
+        if (this.selectedId && !sel) { this.selectedId = all[0]?.id || null; if (!this.selectedId) { this.creating = true; } }
+        this.renderList();
+        this.loadEditor();
+      },
 
+      renderList() {
+        const all = this.all();
+        const counts = { all: all.length, email: all.filter(t => t.channel === 'email').length, whatsapp: all.filter(t => t.channel === 'whatsapp').length };
+        const filters = [['all', 'Todas'], ['email', 'Correo'], ['whatsapp', 'WhatsApp']];
+        document.getElementById('tpl-filters').innerHTML = filters.map(([k, label]) => {
+          const active = this.filter === k;
+          const on = k === 'all' ? 'bg-slate-700 text-white' : TPL_THEME[k].pill;
+          return `<button type="button" onclick="templatesApp.setFilter('${k}')" class="flex-1 px-2 py-1.5 rounded-lg text-[11px] font-semibold transition-all ${active ? on : 'text-slate-400 hover:text-slate-200'}">${label} <span class="opacity-70">${counts[k]}</span></button>`;
+        }).join('');
+
+        const list = all.filter(t => this.filter === 'all' || t.channel === this.filter);
         const container = document.getElementById('templates-list-container');
-        container.innerHTML = templates.map(t => {
-          const isSelected = t.id === this.selectedId;
+        if (!list.length) {
+          const what = this.filter === 'whatsapp' ? 'de WhatsApp' : this.filter === 'email' ? 'de correo' : '';
+          container.innerHTML = `<div class="p-4 rounded-2xl border border-dashed border-slate-700 text-center text-xs text-slate-500">Todavía no tenés plantillas ${what}.<br>Creá la primera con los botones de arriba.</div>`;
+          return;
+        }
+        container.innerHTML = list.map(t => {
+          const th = TPL_THEME[t.channel] || TPL_THEME.email;
+          const isSel = !this.creating && t.id === this.selectedId;
+          const snippet = t.channel === 'whatsapp' ? String(t.body || '').replace(/\s+/g, ' ') : (t.subject || '');
           return `
-            <div
-              onclick="templatesApp.select('${t.id}')"
-              class="p-4 rounded-2xl border cursor-pointer transition-all ${
-                isSelected
-                  ? 'bg-blue-600/15 border-blue-500 shadow-md shadow-blue-500/10'
-                  : 'bg-slate-900/40 border-slate-800 hover:border-slate-700'
-              }"
-            >
-              <div class="flex items-center justify-between mb-1">
-                <span class="text-sm font-bold text-white tracking-tight">${esc(t.name)}</span>
-                <button onclick="event.stopPropagation(); templatesApp.delete('${t.id}')" class="p-1 text-slate-500 hover:text-rose-400">
+            <div onclick="templatesApp.select('${t.id}')" class="relative p-3.5 pl-4 rounded-2xl border cursor-pointer transition-all overflow-hidden ${isSel ? th.sel + ' shadow-md' : 'bg-slate-900/40 border-slate-800 hover:border-slate-600'}">
+              <span class="absolute left-0 top-0 bottom-0 w-1 ${th.bar}"></span>
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[9px] font-bold uppercase tracking-wider ${th.badge}">${TPL_ICON[t.channel] || ''}${th.label}</span>
+                  <div class="text-sm font-bold text-white tracking-tight mt-1 truncate">${esc(t.name)}</div>
+                  <p class="text-[11px] text-slate-400 truncate">${esc(snippet)}</p>
+                </div>
+                <button type="button" title="Eliminar" onclick="event.stopPropagation(); templatesApp.delete('${t.id}')" class="p-1 text-slate-500 hover:text-rose-400 shrink-0">
                   <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 </button>
               </div>
-              <p class="text-xs text-slate-400 truncate">${esc(t.subject)}</p>
-            </div>
-          `;
+            </div>`;
         }).join('');
+      },
 
-        const selected = templates.find(t => t.id === this.selectedId);
-        if (selected) {
-          document.getElementById('template-editor-heading').textContent = 'Editando: ' + selected.name;
-          document.getElementById('tpl-name').value = selected.name;
-          document.getElementById('tpl-subject').value = selected.subject;
-          document.getElementById('tpl-body').value = selected.body;
-          this.renderPreview();
+      setFilter(f) { this.filter = f; this.renderList(); },
+
+      // Carga en el editor la plantilla seleccionada (o deja vacío si es nueva)
+      loadEditor() {
+        const t = this.all().find(x => x.id === this.selectedId);
+        if (t && !this.creating) {
+          this.channel = t.channel || 'email';
+          document.getElementById('tpl-name').value = t.name || '';
+          document.getElementById('tpl-subject').value = t.subject || '';
+          document.getElementById('tpl-body').value = t.body || '';
         }
+        this.applyChannelUI();
+        this.renderStarters();
+        this.renderPreview();
+      },
+
+      applyChannelUI() {
+        const ch = this.channel, th = TPL_THEME[ch], isWa = ch === 'whatsapp';
+        const t = this.all().find(x => x.id === this.selectedId);
+        const editing = !this.creating && !!t;
+        document.getElementById('tpl-editor').setAttribute('data-channel', ch);
+
+        const title = editing ? 'Editando: ' + t.name : (isWa ? 'Nueva plantilla de WhatsApp' : 'Nueva plantilla de correo');
+        const sub = isWa
+          ? 'Mensaje de chat, de 1 a 1 desde tu número. Sin asunto.'
+          : 'Correo con asunto. Se envía desde tu cuenta de correo.';
+        const banner = document.getElementById('tpl-banner');
+        banner.className = 'px-6 py-3 border-b flex items-center gap-3 ' + th.banner;
+        banner.innerHTML = `<span class="w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 ${th.badge}">${TPL_ICON[ch].replace('w-3.5 h-3.5', 'w-4 h-4')}</span>
+          <div class="min-w-0"><div class="text-sm font-bold text-white truncate" id="template-editor-heading">${esc(title)}</div><div class="text-[11px] opacity-80">${th.label} · ${sub}</div></div>`;
+
+        document.getElementById('tpl-subject-wrap').classList.toggle('hidden', isWa);
+        document.getElementById('tpl-subject').required = !isWa;
+        document.getElementById('tpl-body-label').textContent = isWa ? 'Mensaje de WhatsApp *' : 'Cuerpo del correo *';
+        const tb = document.getElementById('tpl-wa-toolbar');
+        tb.classList.toggle('hidden', !isWa); tb.classList.toggle('flex', isWa);
+        document.getElementById('tpl-hint').textContent = isWa
+          ? 'Formato: *negrita*  _cursiva_  ~tachado~'
+          : 'Podés escribir texto simple o HTML.';
+        const btn = document.getElementById('tpl-save-btn');
+        btn.className = 'px-6 py-2.5 rounded-xl text-white text-xs font-semibold shadow-lg transition-all ' + th.btn;
+        document.getElementById('tpl-dup-btn').classList.toggle('hidden', !editing);
+
+        if (isWa) this.field = 'body';
+        // Chips de variables
+        document.getElementById('tpl-vars').innerHTML = TPL_VARS.filter(v => !(isWa && v.emailOnly)).map(v =>
+          `<button type="button" title="${v.hint} — ${v.tag}" onmousedown="event.preventDefault()" onclick="templatesApp.insertVar('${v.tag}')" class="px-2.5 py-1 rounded-lg border text-[11px] font-semibold transition-all ${th.chip}">${v.icon} ${v.label}</button>`).join('');
+        document.getElementById('tpl-vars-target').textContent = isWa ? 'Tocá uno para ponerlo donde está el cursor' : 'Se agrega donde está el cursor (asunto o cuerpo)';
+      },
+
+      renderStarters() {
+        const wrap = document.getElementById('tpl-starters-wrap');
+        if (!this.creating) { wrap.classList.add('hidden'); return; }
+        const th = TPL_THEME[this.channel];
+        const list = TPL_STARTERS[this.channel] || [];
+        document.getElementById('tpl-starters').innerHTML = list.map((st, i) =>
+          `<button type="button" onclick="templatesApp.useStarter(${i})" class="px-3 py-1.5 rounded-xl border text-[11px] font-semibold transition-all ${th.chip}">✨ ${esc(st.name)}</button>`).join('');
+        wrap.classList.remove('hidden');
+      },
+
+      useStarter(i) {
+        const st = (TPL_STARTERS[this.channel] || [])[i];
+        if (!st) return;
+        const body = document.getElementById('tpl-body');
+        if (body.value.trim() && !confirm('Esto reemplaza lo que ya escribiste. ¿Seguimos?')) return;
+        if (!document.getElementById('tpl-name').value.trim()) document.getElementById('tpl-name').value = st.name;
+        document.getElementById('tpl-subject').value = st.subject || '';
+        body.value = st.body;
+        this.renderPreview();
       },
 
       select(id) {
         this.selectedId = id;
+        this.creating = false;
         this.render();
       },
 
-      createNew() {
+      createNew(channel) {
+        this.creating = true;
         this.selectedId = null;
-        document.getElementById('template-editor-heading').textContent = 'Crear Nueva Plantilla';
+        this.channel = channel === 'whatsapp' ? 'whatsapp' : 'email';
         document.getElementById('tpl-name').value = '';
         document.getElementById('tpl-subject').value = '';
         document.getElementById('tpl-body').value = '';
-        document.getElementById('tpl-preview-box').textContent = '';
+        this.field = 'body';
+        this.renderList();
+        this.applyChannelUI();
+        this.renderStarters();
+        this.renderPreview();
+        document.getElementById('tpl-name').focus();
       },
 
-      insertTag(field, tag) {
-        const input = field === 'subject' ? document.getElementById('tpl-subject') : document.getElementById('tpl-body');
-        input.value += ' ' + tag;
-        this.renderPreview();
+      duplicate() {
+        const t = this.all().find(x => x.id === this.selectedId);
+        if (!t) return;
+        const templates = this.all();
+        const copy = { ...t, id: 'tpl_' + Date.now(), name: t.name + ' (copia)', createdAt: new Date().toISOString() };
+        templates.unshift(copy);
+        storage.save('templates', templates);
+        this.selectedId = copy.id; this.creating = false;
+        this.render();
+        app.showToast('Plantilla duplicada', 'success');
+      },
+
+      // ---- edición ----
+      activeEl() {
+        const useSubject = this.channel === 'email' && this.field === 'subject';
+        return document.getElementById(useSubject ? 'tpl-subject' : 'tpl-body');
+      },
+
+      insertVar(tag) {
+        const el = this.activeEl();
+        this.insertText(el, tag);
+      },
+
+      emoji(e) { this.insertText(document.getElementById('tpl-body'), e); },
+
+      insertText(el, text) {
+        const start = el.selectionStart ?? el.value.length;
+        const end = el.selectionEnd ?? start;
+        el.value = el.value.slice(0, start) + text + el.value.slice(end);
+        const pos = start + text.length;
+        el.focus();
+        el.setSelectionRange(pos, pos);
+        this.onInput();
+      },
+
+      wrap(mark) {
+        const el = document.getElementById('tpl-body');
+        const start = el.selectionStart, end = el.selectionEnd;
+        const selected = el.value.slice(start, end);
+        const inner = selected || 'texto';
+        el.value = el.value.slice(0, start) + mark + inner + mark + el.value.slice(end);
+        el.focus();
+        el.setSelectionRange(start + mark.length, start + mark.length + inner.length);
+        this.onInput();
+      },
+
+      onInput() { this.renderPreview(); },
+
+      // ---- vista previa ----
+      fill(text) {
+        const noName = document.getElementById('tpl-noname')?.checked;
+        return fillNombre(text, noName ? '' : 'Carlos Mendoza')
+          .replace(/\{\{empresa\}\}/g, 'Inmobiliaria Central')
+          .replace(/\{\{contacto\}\}/g, 'Gerente Comercial')
+          .replace(/\{\{barrio\}\}/g, 'Zona Norte')
+          .replace(/\{\{mi_nombre\}\}/g, app.profile?.userName || 'Tu nombre')
+          .replace(/\{\{mi_empresa\}\}/g, app.profile?.companyName || 'Tu empresa')
+          .replace(/\{\{mi_email\}\}/g, app.profile?.userEmail || 'tu@email.com');
+      },
+
+      waFormat(text) {
+        let h = esc(text);
+        h = h.replace(/(^|[\s(¡¿])\*([^*\n]+)\*(?=[\s.,;:!?)]|$)/g, '$1<strong>$2</strong>');
+        h = h.replace(/(^|[\s(¡¿])_([^_\n]+)_(?=[\s.,;:!?)]|$)/g, '$1<em>$2</em>');
+        h = h.replace(/(^|[\s(¡¿])~([^~\n]+)~(?=[\s.,;:!?)]|$)/g, '$1<s>$2</s>');
+        return h;
       },
 
       renderPreview() {
-        const body = document.getElementById('tpl-body').value;
-        const rendered = body
-          .replace(/\{\{nombre\}\}/g, 'Carlos Mendoza')
-          .replace(/\{\{empresa\}\}/g, 'Empresa Cliente')
-          .replace(/\{\{contacto\}\}/g, 'Gerente Comercial')
-          .replace(/\{\{barrio\}\}/g, 'Zona Norte')
-          .replace(/\{\{mi_nombre\}\}/g, app.profile?.userName || 'Asesor')
-          .replace(/\{\{mi_empresa\}\}/g, app.profile?.companyName || 'Mi Empresa')
-          .replace(/\{\{mi_email\}\}/g, app.profile?.userEmail || 'contacto@empresa.com');
-        document.getElementById('tpl-preview-box').textContent = rendered;
+        const box = document.getElementById('tpl-preview');
+        const rawBody = document.getElementById('tpl-body').value;
+        const rawSubject = document.getElementById('tpl-subject').value;
+        const body = this.fill(rawBody);
+        const count = document.getElementById('tpl-count');
+
+        if (this.channel === 'whatsapp') {
+          const now = new Date();
+          const hh = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+          box.innerHTML = `
+            <div class="rounded-2xl border border-slate-800 overflow-hidden">
+              <div class="px-3 py-2 bg-emerald-900/40 border-b border-slate-800 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-emerald-600/60 flex items-center justify-center text-[10px] text-white font-bold">CM</span>
+                <span class="text-[11px] text-slate-200 font-semibold">Carlos Mendoza</span>
+              </div>
+              <div class="p-4 bg-slate-950 min-h-[200px] flex justify-end items-start">
+                <div class="max-w-[92%] rounded-2xl rounded-tr-sm bg-emerald-800/70 px-3 py-2 shadow">
+                  <div class="text-xs text-emerald-50 whitespace-pre-wrap break-words leading-relaxed font-sans">${body.trim() ? this.waFormat(body) : '<span class="text-emerald-200/50">Acá vas a ver tu mensaje…</span>'}</div>
+                  <div class="text-[9px] text-emerald-200/60 text-right mt-1">${hh} ✓✓</div>
+                </div>
+              </div>
+            </div>`;
+          const n = rawBody.length;
+          count.textContent = n + ' caracteres' + (n > 700 ? ' · largo: los mensajes cortos funcionan mejor' : '');
+          count.className = 'text-[10px] ' + (n > 700 ? 'text-amber-400' : 'text-slate-500');
+        } else {
+          const fromName = app.profile?.userName || 'Tu nombre';
+          const fromMail = app.profile?.userEmail || 'tu@email.com';
+          const subject = this.fill(rawSubject);
+          box.innerHTML = `
+            <div class="rounded-2xl border border-slate-800 bg-slate-950 overflow-hidden">
+              <div class="px-4 py-3 border-b border-slate-800 space-y-0.5">
+                <div class="text-[10px] text-slate-500">De: <span class="text-slate-300">${esc(fromName)}</span> &lt;${esc(fromMail)}&gt;</div>
+                <div class="text-[10px] text-slate-500">Para: <span class="text-slate-300">carlos.mendoza@ejemplo.com</span></div>
+                <div class="text-sm font-bold text-white pt-1">${subject.trim() ? esc(subject) : '<span class="text-slate-600 font-normal">Asunto del correo…</span>'}</div>
+              </div>
+              <div class="p-4 text-xs text-slate-300 whitespace-pre-wrap break-words font-sans leading-relaxed min-h-[160px]">${body.trim() ? esc(body) : '<span class="text-slate-600">Acá vas a ver tu correo…</span>'}</div>
+            </div>`;
+          const n = rawSubject.length;
+          count.textContent = rawSubject ? 'Asunto: ' + n + ' caracteres' + (n > 70 ? ' · conviene que sea más corto' : '') : '';
+          count.className = 'text-[10px] ' + (n > 70 ? 'text-amber-400' : 'text-slate-500');
+        }
       },
 
       save(e) {
         e.preventDefault();
-        const name = document.getElementById('tpl-name').value;
-        const subject = document.getElementById('tpl-subject').value;
+        const name = document.getElementById('tpl-name').value.trim();
+        const isWa = this.channel === 'whatsapp';
+        const subject = isWa ? '' : document.getElementById('tpl-subject').value;
         const body = document.getElementById('tpl-body').value;
+        if (!name || !body.trim()) return;
 
-        let templates = storage.get('templates') || [];
-        if (this.selectedId) {
-          const idx = templates.findIndex(t => t.id === this.selectedId);
-          if (idx >= 0) {
-            templates[idx] = { ...templates[idx], name, subject, body };
-          }
+        let templates = this.all();
+        const idx = this.creating ? -1 : templates.findIndex(t => t.id === this.selectedId);
+        if (idx >= 0) {
+          templates[idx] = { ...templates[idx], name, subject, body, channel: this.channel };
         } else {
-          const newTpl = {
-            id: 'tpl_' + Date.now(),
-            name,
-            subject,
-            body,
-            createdAt: new Date().toISOString()
-          };
+          const newTpl = { id: 'tpl_' + Date.now(), channel: this.channel, name, subject, body, createdAt: new Date().toISOString() };
           templates.unshift(newTpl);
           this.selectedId = newTpl.id;
         }
-
+        this.creating = false;
         storage.save('templates', templates);
         this.render();
         app.showToast('Plantilla guardada con éxito', 'success');
@@ -3600,10 +4102,9 @@ self.addEventListener('fetch', (e) => {
 
       delete(id) {
         if (!confirm('¿Eliminar esta plantilla?')) return;
-        let templates = storage.get('templates') || [];
-        templates = templates.filter(t => t.id !== id);
+        let templates = this.all().filter(t => t.id !== id);
         storage.save('templates', templates);
-        this.selectedId = templates[0]?.id || null;
+        if (this.selectedId === id) { this.selectedId = templates[0]?.id || null; this.creating = false; }
         this.render();
         app.showToast('Plantilla eliminada', 'info');
       }
@@ -3805,5 +4306,34 @@ self.addEventListener('fetch', (e) => {
 
     });
   </script>
+
+  <!-- Corrector de números de WhatsApp -->
+  <div id="modal-phone-fixer" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-3xl max-h-[90vh] flex flex-col rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-base font-bold text-white">Revisar y corregir números</h3>
+          <p id="pf-subtitle" class="text-xs text-slate-400"></p>
+        </div>
+        <button type="button" onclick="phoneFixer.close()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+      <div class="px-6 py-3 border-b border-slate-800 flex flex-wrap items-center gap-3">
+        <div id="pf-summary" class="flex flex-wrap gap-2 text-[11px] font-semibold"></div>
+        <label class="ml-auto flex items-center gap-2 text-[11px] text-slate-400">
+          Código de área por defecto
+          <input id="pf-area" type="text" inputmode="numeric" maxlength="4" placeholder="Ej. 11" oninput="phoneFixer.setArea(this.value)" class="w-16 px-2 py-1 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs text-center focus:outline-none focus:border-emerald-500" />
+        </label>
+      </div>
+      <p class="px-6 pt-2 text-[10px] text-slate-500">Sirve para completar números de 8 dígitos sin característica (ej. 4444 5555 → 11 4444 5555).</p>
+      <div id="pf-body" class="flex-1 overflow-y-auto px-6 py-3 space-y-2"></div>
+      <div class="px-6 py-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <button type="button" onclick="phoneFixer.removeInvalid()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Quitar el número a todos los inválidos</button>
+        <div class="flex gap-2">
+          <button type="button" onclick="phoneFixer.close()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Cancelar</button>
+          <button type="button" onclick="phoneFixer.save()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-500/25">Guardar correcciones</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
