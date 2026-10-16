@@ -826,11 +826,7 @@ else go.disabled=false;pw.focus()},30)};
                 <label class="block text-xs font-semibold text-slate-300">
                   Mensaje de WhatsApp con Variables *
                 </label>
-                <div class="flex gap-1.5">
-                  <button type="button" onclick="waApp.insertTag('{{nombre}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{nombre}}</button>
-                  <button type="button" onclick="waApp.insertTag('{{empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{empresa}}</button>
-                  <button type="button" onclick="waApp.insertTag('{{barrio}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{barrio}}</button>
-                </div>
+                <div class="flex flex-wrap gap-1.5 justify-end"><button type="button" onclick="waApp.insertTag('{{nombre}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{nombre}}</button><button type="button" onclick="waApp.insertTag('{{empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{empresa}}</button><button type="button" onclick="waApp.insertTag('{{barrio}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{barrio}}</button><button type="button" onclick="waApp.insertTag('{{contacto}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{contacto}}</button><button type="button" onclick="waApp.insertTag('{{mi_nombre}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{mi_nombre}}</button><button type="button" onclick="waApp.insertTag('{{mi_empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{mi_empresa}}</button></div>
               </div>
 
               <div class="flex flex-wrap items-center gap-2">
@@ -845,7 +841,7 @@ else go.disabled=false;pw.focus()},30)};
                 class="w-full p-4 rounded-2xl bg-slate-950 border border-slate-700 text-slate-200 text-xs font-mono leading-relaxed focus:outline-none focus:border-emerald-500"
               >Hola *{{nombre}}*, ¿cómo estás?
 
-Te escribo de parte de *{{mi_empresa}}* para ponerme en contacto con la administración de *{{empresa}}*.
+Te escribo de parte de *{{mi_empresa}}* para presentarte nuestra propuesta para *{{empresa}}*.
 
 ¿Tendrías 5 minutos para coordinar una breve reunión o demo esta semana?
 
@@ -951,7 +947,7 @@ Saludos cordiales!
               <h4 class="text-sm font-bold text-white mb-2">Propuesta Comercial Directa</h4>
               <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 whitespace-pre-wrap leading-relaxed">Hola *{{nombre}}*, ¿cómo estás?
 
-Te escribo de parte de *{{mi_empresa}}* para ponerme en contacto con la administración de *{{empresa}}*.
+Te escribo de parte de *{{mi_empresa}}* para presentarte nuestra propuesta para *{{empresa}}*.
 
 Desarrollamos soluciones integrales para digitalizar procesos y aumentar ventas en empresas de *{{barrio}}*.
 
@@ -1239,6 +1235,7 @@ Quedo a tu disposición,
         <div class="flex flex-wrap gap-2">
           <button type="button" onclick="settingsApp.showTab('email')" data-set-tab="email" class="set-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all">Correo</button>
           <button type="button" onclick="settingsApp.showTab('whatsapp')" data-set-tab="whatsapp" class="set-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all">WhatsApp</button>
+          <button type="button" onclick="settingsApp.showTab('dnc')" data-set-tab="dnc" class="set-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all">No contactar</button>
           <button type="button" onclick="settingsApp.showTab('brand')" data-set-tab="brand" class="set-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all">Marca y respaldo</button>
         </div>
 
@@ -1404,6 +1401,38 @@ Quedo a tu disposición,
             </div>
         </div>
 
+        <!-- ===== TAB NO CONTACTAR ===== -->
+        <div id="settings-tab-dnc" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="space-y-6">
+            <div class="rounded-3xl bg-slate-900/40 border border-slate-800 p-6 backdrop-blur-xl space-y-3">
+              <div>
+                <h3 class="text-base font-bold text-white">Agregar a "No contactar"</h3>
+                <p class="text-xs text-slate-400 mt-1">Pega los emails o teléfonos de quienes pidieron la baja (uno por línea). Se excluyen solos de todas las campañas futuras, de email y de WhatsApp.</p>
+              </div>
+              <textarea id="dnc-input" rows="5" placeholder="persona@ejemplo.com&#10;+54 9 11 5555-0000" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-rose-500"></textarea>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="dncApp.addFromForm()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold">Agregar a la lista</button>
+                <label class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold cursor-pointer">Cargar archivo .csv/.txt<input type="file" accept=".csv,.txt" class="hidden" onchange="dncApp.importFile(event)" /></label>
+              </div>
+            </div>
+            <div class="rounded-3xl bg-slate-900/40 border border-slate-800 p-6 backdrop-blur-xl space-y-3">
+              <div>
+                <h3 class="text-base font-bold text-white">Pie de baja automático</h3>
+                <p class="text-xs text-slate-400 mt-1">Se agrega al final de cada mensaje de campaña. Déjalo vacío para no incluirlo (no recomendado).</p>
+              </div>
+              <div><label class="block text-xs font-semibold text-slate-300 mb-1">Correos</label><textarea id="dnc-footer-email" rows="2" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"></textarea></div>
+              <div><label class="block text-xs font-semibold text-slate-300 mb-1">WhatsApp</label><textarea id="dnc-footer-wa" rows="2" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"></textarea></div>
+              <div class="flex justify-end"><button type="button" onclick="dncApp.saveFooters()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">Guardar pies</button></div>
+              <p class="text-[11px] text-amber-300/90">Cuando alguien responda BAJA, agrégalo aquí a mano: la app no lee tus respuestas.</p>
+            </div>
+          </div>
+          <div class="rounded-3xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl overflow-hidden self-start">
+            <div class="p-5 flex items-center justify-between"><h3 class="text-sm font-bold text-white">En la lista (<span id="dnc-count">0</span>)</h3>
+              <button type="button" onclick="dncApp.exportCsv()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold">Exportar CSV</button></div>
+            <div class="overflow-auto max-h-[520px]"><table class="w-full text-left text-xs"><thead class="text-slate-500 uppercase text-[10px] border-y border-slate-800"><tr><th class="py-2 px-3">Dato</th><th class="py-2 px-3">Tipo</th><th class="py-2 px-3">Fecha</th><th class="py-2 px-3"></th></tr></thead><tbody id="dnc-table" class="divide-y divide-slate-800/60"></tbody></table></div>
+          </div>
+        </div>
+
         <!-- ===== TAB MARCA ===== -->
         <div id="settings-tab-brand" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
             <!-- Profile & White-Label Shortcut -->
@@ -1422,6 +1451,8 @@ Quedo a tu disposición,
             <!-- Backup & Export -->
             <div class="p-4 rounded-2xl bg-slate-900/50 border border-slate-800 text-xs space-y-3">
               <span class="font-bold text-white block">Respaldo & Limpieza</span>
+              <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer"><input id="backup-remind-toggle" type="checkbox" onchange="backupReminder.setEnabled(this.checked)" class="accent-amber-500" /> Recordarme el respaldo cada día</label>
+              <p id="backup-last" class="text-[11px] text-slate-500"></p>
               <button onclick="app.exportDatabaseJson()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center justify-center gap-1.5">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Exportar Respaldo JSON
@@ -1685,6 +1716,17 @@ Quedo a tu disposición,
   </div>
 
   <!-- Toast Notification Container -->
+  <div id="backup-reminder" class="hidden fixed bottom-6 left-6 z-40 max-w-sm p-4 rounded-2xl bg-slate-900 border border-amber-500/40 shadow-2xl space-y-3">
+    <div class="flex items-start gap-2.5">
+      <span class="text-lg leading-none">💾</span>
+      <div><p class="text-xs font-bold text-amber-300">Recordatorio de respaldo diario</p><p id="backup-reminder-text" class="text-[11px] text-slate-300 mt-0.5"></p></div>
+    </div>
+    <div class="flex gap-2 justify-end">
+      <button type="button" onclick="backupReminder.later()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold">Más tarde</button>
+      <button type="button" onclick="backupReminder.now()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold">Descargar respaldo</button>
+    </div>
+  </div>
+
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2 pointer-events-none"></div>
 
   <!-- ==================== COMPLETE APPLICATION JAVASCRIPT ==================== -->
@@ -2012,6 +2054,50 @@ self.addEventListener('fetch', (e) => {
       "}"
     ].join('\n');
 
+
+    // ---------- RECORDATORIO DIARIO DE RESPALDO ----------
+    const backupReminder = {
+      DAY: 864e5, SNOOZE: 3 * 36e5,
+      enabled() { return storage.get('backupRemind') !== false; },
+      hasData() {
+        const l = storage.get('lists') || [];
+        return (storage.get('campaigns') || []).length || (storage.get('waCampaigns') || []).length || (storage.get('dnc') || []).length || (storage.get('templates') || []).length > 1 || l.length > 1 || l.some(x => x.id !== 'list_demo_1');
+      },
+      due() {
+        if (!this.enabled()) return false;
+        if (Date.now() < (storage.get('backupSnooze') || 0)) return false;
+        const last = storage.get('lastBackup');
+        if (!last) return !!this.hasData();
+        return Date.now() - last >= this.DAY;
+      },
+      ago() {
+        const last = storage.get('lastBackup');
+        if (!last) return 'nunca';
+        const h = Math.floor((Date.now() - last) / 36e5);
+        return h < 1 ? 'hace menos de 1 hora' : h < 48 ? 'hace ' + h + ' h' : 'hace ' + Math.floor(h / 24) + ' días';
+      },
+      check() {
+        const el = document.getElementById('backup-reminder');
+        if (!el) return;
+        if (!this.due()) return this.hide();
+        document.getElementById('backup-reminder-text').textContent = 'Último respaldo: ' + this.ago() + '. Tus datos viven solo en este navegador.';
+        el.classList.remove('hidden');
+      },
+      hide() { document.getElementById('backup-reminder')?.classList.add('hidden'); },
+      later() { storage.save('backupSnooze', Date.now() + this.SNOOZE); this.hide(); },
+      now() { app.exportDatabaseJson(); },
+      setEnabled(v) {
+        storage.save('backupRemind', !!v);
+        if (v) this.check(); else this.hide();
+        app.showToast(v ? 'Recordatorio diario activado' : 'Recordatorio diario desactivado', 'info');
+      },
+      renderSettings() {
+        const cb = document.getElementById('backup-remind-toggle'), t = document.getElementById('backup-last');
+        if (cb) cb.checked = this.enabled();
+        if (t) t.textContent = 'Último respaldo: ' + this.ago();
+      }
+    };
+
     // ---------- MAIN APP CONTROLLER ----------
     const app = {
       currentView: 'dashboard',
@@ -2119,7 +2205,7 @@ self.addEventListener('fetch', (e) => {
         if (viewId === 'stats') analytics.render();
         if (viewId === 'contacts') contactsApp.render();
         if (viewId === 'templates') templatesApp.render();
-        if (viewId === 'settings') { settingsApp.render(); waSettings.load(); waAuto.renderSteps(); }
+        if (viewId === 'settings') { settingsApp.render(); waSettings.load(); waAuto.renderSteps(); dncApp.render(); backupReminder.renderSettings(); }
       },
 
       renderDashboard() {
@@ -2271,6 +2357,7 @@ self.addEventListener('fetch', (e) => {
           campaigns: storage.get('campaigns'),
           waCampaigns: storage.get('waCampaigns'),
           smtpConfigs: storage.get('smtpConfigs'),
+          dnc: storage.get('dnc'),
           exportedAt: new Date().toISOString()
         };
         const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -2279,6 +2366,8 @@ self.addEventListener('fetch', (e) => {
         a.href = url;
         a.download = `outreach_backup_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
+        storage.save('lastBackup', Date.now());
+        backupReminder.hide(); backupReminder.renderSettings();
         this.showToast('Respaldo descargado con éxito', 'success');
       },
 
@@ -2287,6 +2376,7 @@ self.addEventListener('fetch', (e) => {
         storage.save('lists', []);
         storage.save('campaigns', []);
         storage.save('waCampaigns', []);
+        storage.save('dnc', []);
         location.reload();
       }
     };
@@ -2429,7 +2519,7 @@ self.addEventListener('fetch', (e) => {
     const WA_PRESETS = [
       {
         name: "Propuesta Comercial Directa",
-        text: `Hola *{{nombre}}*, ¿cómo estás?\n\nTe escribo de parte de *{{mi_empresa}}* para ponerme en contacto con la administración de *{{empresa}}*.\n\nDesarrollamos soluciones integrales para digitalizar procesos y aumentar ventas en empresas de *{{barrio}}*.\n\n¿Tendrías 5 minutos para coordinar una breve demo virtual esta semana?\n\nSaludos!\n*{{mi_nombre}}*`
+        text: `Hola *{{nombre}}*, ¿cómo estás?\n\nTe escribo de parte de *{{mi_empresa}}* para presentarte nuestra propuesta para *{{empresa}}*.\n\nDesarrollamos soluciones integrales para digitalizar procesos y aumentar ventas en empresas de *{{barrio}}*.\n\n¿Tendrías 5 minutos para coordinar una breve demo virtual esta semana?\n\nSaludos!\n*{{mi_nombre}}*`
       },
       {
         name: "Aviso Express de Prospección",
@@ -2574,8 +2664,10 @@ self.addEventListener('fetch', (e) => {
       },
 
       insertTag(tag) {
-        const textarea = document.getElementById('wa-message-template');
-        textarea.value += ' ' + tag;
+        const t = document.getElementById('wa-message-template');
+        const s = t.selectionStart ?? t.value.length, e = t.selectionEnd ?? s;
+        t.value = t.value.slice(0, s) + tag + t.value.slice(e);
+        t.focus(); t.setSelectionRange(s + tag.length, s + tag.length);
       },
 
       usePreset(idx) {
@@ -2628,6 +2720,8 @@ self.addEventListener('fetch', (e) => {
         const lists = storage.get('lists') || [];
         const list = lists.find(l => l.id === listId);
         const contacts = list ? chContacts(list, 'wa') : [];
+        const dncWa = list ? dncApp.excluded(list, 'wa') : 0;
+        if (dncWa) app.showToast(dncWa + ' contacto' + (dncWa > 1 ? 's' : '') + ' en "No contactar": excluido' + (dncWa > 1 ? 's' : '') + ' de esta campaña.', 'info');
 
         if (contacts.length === 0) {
           app.showToast('La lista seleccionada no tiene contactos con teléfono', 'error');
@@ -2745,6 +2839,7 @@ self.addEventListener('fetch', (e) => {
           return;
         }
         if (cfg.signature) message += '\n\n' + cfg.signature;
+        const waFoot = dncApp.cfg().waFooter.trim(); if (waFoot) message += '\n\n' + waFoot;
         const win = this.openChat(fullPhone, message);
         if (!win) {
           addLog('text-amber-300', 'El navegador bloqueó la ventana. Permite ventanas emergentes para este sitio y pulsa Reanudar.');
@@ -3160,6 +3255,95 @@ self.addEventListener('fetch', (e) => {
       addSent() { storage.save('waSent', { date: new Date().toDateString(), n: this.sentToday() + 1 }); }
     };
 
+
+    // ---------- NO CONTACTAR (bajas) ----------
+    const dncApp = {
+      defaults: { emailFooter: 'Si no querés recibir más mensajes, respondé BAJA a este correo.', waFooter: 'Si no querés recibir más mensajes, respondé BAJA.' },
+      _set: null,
+      list() { return storage.get('dnc') || []; },
+      cfg() { return { ...this.defaults, ...(storage.get('dncSettings') || {}) }; },
+      key(v) {
+        v = String(v || '').trim();
+        if (v.includes('@')) return 'e:' + v.toLowerCase();
+        const d = v.replace(/\D/g, '');
+        return d.length >= 8 ? 'p:' + d.slice(-10) : '';
+      },
+      keys() { if (!this._set) this._set = new Set(this.list().map(x => this.key(x.value)).filter(Boolean)); return this._set; },
+      blocked(c) {
+        const s = this.keys();
+        if (!s.size) return false;
+        return (!!c.email && s.has(this.key(c.email))) || (!!c.phone && s.has(this.key(c.phone)));
+      },
+      excluded(list, ch) { return chRaw(list, ch).length - chContacts(list, ch).length; },
+      withEmailFooter(body) { const f = this.cfg().emailFooter.trim(); return f ? body + '\n\n' + f : body; },
+      add(text, source) {
+        const entries = this.list(), have = this.keys();
+        let added = 0;
+        String(text || '').split('\n').forEach(line => {
+          const found = [];
+          (line.match(/[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+/g) || []).forEach(m => found.push(m.toLowerCase()));
+          const rest = line.replace(/[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+/g, ' ');
+          (rest.match(/\+?\d[\d\s().-]{6,}\d/g) || []).forEach(m => found.push(m.trim()));
+          found.forEach(v => {
+            const k = this.key(v);
+            if (!k || have.has(k)) return;
+            have.add(k);
+            entries.unshift({ value: v, type: v.includes('@') ? 'email' : 'phone', addedAt: new Date().toISOString(), source: source || 'manual' });
+            added++;
+          });
+        });
+        storage.save('dnc', entries);
+        this._set = null;
+        return added;
+      },
+      addFromForm() {
+        const ta = document.getElementById('dnc-input');
+        const n = this.add(ta.value, 'manual');
+        if (!n) return app.showToast('No encontré emails ni teléfonos nuevos para agregar', 'info');
+        ta.value = '';
+        this.render();
+        app.showToast(n + ' contacto' + (n > 1 ? 's' : '') + ' agregado' + (n > 1 ? 's' : '') + ' a "No contactar"', 'success');
+      },
+      importFile(e) {
+        const f = e.target.files?.[0]; e.target.value = '';
+        if (!f) return;
+        const fr = new FileReader();
+        fr.onload = () => {
+          const n = this.add(String(fr.result), 'archivo');
+          this.render();
+          app.showToast(n ? n + ' agregados desde el archivo' : 'No se encontraron datos nuevos en el archivo', n ? 'success' : 'info');
+        };
+        fr.readAsText(f);
+      },
+      remove(i) {
+        const l = this.list(); l.splice(i, 1);
+        storage.save('dnc', l); this._set = null; this.render();
+      },
+      saveFooters() {
+        storage.save('dncSettings', {
+          emailFooter: document.getElementById('dnc-footer-email').value,
+          waFooter: document.getElementById('dnc-footer-wa').value
+        });
+        app.showToast('Pies de baja guardados', 'success');
+      },
+      exportCsv() {
+        const l = this.list();
+        if (!l.length) return app.showToast('La lista está vacía', 'info');
+        analytics.csv([['Dato', 'Tipo', 'Fecha', 'Origen'], ...l.map(x => [x.value, x.type, new Date(x.addedAt).toLocaleString(), x.source])], 'no_contactar.csv');
+      },
+      render() {
+        const c = this.cfg(), l = this.list();
+        const fe = document.getElementById('dnc-footer-email'), fw = document.getElementById('dnc-footer-wa');
+        if (!fe) return;
+        fe.value = c.emailFooter; fw.value = c.waFooter;
+        document.getElementById('dnc-count').textContent = l.length;
+        const MAX = 300;
+        document.getElementById('dnc-table').innerHTML = l.length
+          ? l.slice(0, MAX).map((x, i) => `<tr><td class="py-2 px-3 font-mono text-slate-200">${esc(x.value)}</td><td class="py-2 px-3 text-slate-400">${x.type === 'email' ? 'Email' : 'Teléfono'}</td><td class="py-2 px-3 text-slate-500">${new Date(x.addedAt).toLocaleDateString()}</td><td class="py-2 px-3 text-right"><button type="button" onclick="dncApp.remove(${i})" class="text-[11px] text-slate-400 hover:text-rose-300">Quitar</button></td></tr>`).join('') + (l.length > MAX ? `<tr><td colspan="4" class="py-2 px-3 text-center text-[11px] text-slate-500">Mostrando ${MAX} de ${l.length}</td></tr>` : '')
+          : '<tr><td colspan="4" class="py-6 text-center text-slate-500">Todavía no hay nadie en la lista.</td></tr>';
+      }
+    };
+
     // ---------- EMAIL CAMPAIGNS CONTROLLER ----------
     const emailCampaigns = {
       filterStatus: 'ALL',
@@ -3272,7 +3456,7 @@ self.addEventListener('fetch', (e) => {
         const sample = (list && list.contacts && list.contacts[0]) || {};
 
         const subject = '[PRUEBA] ' + mailService.fillMerge(tpl.subject, sample);
-        const body = mailService.fillMerge(tpl.body, sample) +
+        const body = dncApp.withEmailFooter(mailService.fillMerge(tpl.body, sample)) +
           '\n\n— Este es un envío de prueba, no se contabiliza en las estadísticas de la campaña.';
 
         const origText = btn.textContent;
@@ -3299,6 +3483,8 @@ self.addEventListener('fetch', (e) => {
         const lists = storage.get('lists') || [];
         const list = lists.find(l => l.id === listId);
         const totalCount = list ? chContacts(list, 'email').length : 0;
+        const dncMail = list ? dncApp.excluded(list, 'email') : 0;
+        if (dncMail) app.showToast(dncMail + ' contacto' + (dncMail > 1 ? 's' : '') + ' en "No contactar": excluido' + (dncMail > 1 ? 's' : '') + ' de esta campaña.', 'info');
         if (!name.trim() || !listId || !templateId || !accountId || totalCount === 0) { app.showToast('Completá nombre, lista (con contactos), plantilla y cuenta de envío.', 'error'); return; }
         if (!confirm('Se van a enviar ' + totalCount + ' correos REALES desde la cuenta elegida. ¿Lanzar la campaña?')) return;
 
@@ -3360,7 +3546,7 @@ self.addEventListener('fetch', (e) => {
             let ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ct.email || ''), err = ok ? '' : 'Email inválido', provErr = false;
             if (ok) {
               try {
-                await mailService.send(cfg, { to: ct.email, subject: mailService.fillMerge(tpl.subject, ct), body: mailService.fillMerge(tpl.body, ct) });
+                await mailService.send(cfg, { to: ct.email, subject: mailService.fillMerge(tpl.subject, ct), body: dncApp.withEmailFooter(mailService.fillMerge(tpl.body, ct)) });
               } catch (e) { ok = false; provErr = true; err = (e && e.message) || 'Error de envío'; }
             }
             camps = storage.get('campaigns') || [];
@@ -3531,7 +3717,8 @@ self.addEventListener('fetch', (e) => {
 
     // ---------- CONTACTS APP CONTROLLER ----------
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    const chContacts = (l, ch) => (l.contacts || []).filter(c => ch === 'wa' ? String(c.phone || '').replace(/\D/g, '').length >= 8 : EMAIL_RE.test(c.email || ''));
+    const chRaw = (l, ch) => (l.contacts || []).filter(c => ch === 'wa' ? String(c.phone || '').replace(/\D/g, '').length >= 8 : EMAIL_RE.test(c.email || ''));
+    const chContacts = (l, ch) => chRaw(l, ch).filter(c => !dncApp.blocked(c));
     const chOptions = (ch, empty) => {
       const ls = (storage.get('lists') || []).map(l => ({ l, n: chContacts(l, ch).length })).filter(x => x.n > 0);
       return ls.length ? ls.map(({ l, n }) => `<option value="${l.id}">${esc(l.name)} (${n}${n < (l.contacts || []).length ? ' de ' + l.contacts.length : ''} con ${ch === 'wa' ? 'teléfono' : 'email'})</option>`).join('') : `<option value="">${empty}</option>`;
@@ -4139,7 +4326,7 @@ self.addEventListener('fetch', (e) => {
 
       showTab(t) {
         this.tab = t;
-        ['email', 'whatsapp', 'brand'].forEach(k => this.$('settings-tab-' + k).classList.toggle('hidden', k !== t));
+        ['email', 'whatsapp', 'dnc', 'brand'].forEach(k => this.$('settings-tab-' + k).classList.toggle('hidden', k !== t));
         document.querySelectorAll('.set-tab-btn').forEach(b => {
           const on = b.dataset.setTab === t;
           b.className = 'set-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all ' + (on
@@ -4306,6 +4493,8 @@ self.addEventListener('fetch', (e) => {
     // Initialize application on window load
     window.addEventListener('DOMContentLoaded', () => {
       app.init();
+      backupReminder.check();
+      setInterval(() => backupReminder.check(), 30 * 60 * 1000);
 
       // Check onboarding on first load
       const currentProfile = storage.get('profile');
