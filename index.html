@@ -834,7 +834,7 @@ else go.disabled=false;pw.focus()},30)};
               </div>
 
               <div class="flex flex-wrap items-center gap-2">
-                <select id="wa-saved-template" onchange="waApp.loadSaved(this.value)" class="flex-1 min-w-[200px] px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs"></select>
+                <select id="wa-saved-template" onfocus="waApp.fillSaved()" onchange="waApp.loadSaved(this.value)" class="flex-1 min-w-[200px] px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs"></select>
                 <button type="button" onclick="app.navigate('templates'); templatesApp.createNew('whatsapp')" class="px-3 py-2 rounded-xl bg-emerald-600/15 hover:bg-emerald-600/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">+ Crear plantilla</button>
               </div>
 
@@ -2458,16 +2458,27 @@ self.addEventListener('fetch', (e) => {
       fillSaved() {
         const sel = document.getElementById('wa-saved-template');
         if (!sel) return;
-        const ts = (storage.get('templates') || []).filter(t => t.channel === 'whatsapp');
+        const all = storage.get('templates') || [];
+        const ts = all.filter(t => t.channel === 'whatsapp');
+        const others = all.filter(t => t.channel !== 'whatsapp');
+        const keep = sel.value;
         sel.innerHTML = '<option value="">' + (ts.length ? '📂 Cargar una plantilla de WhatsApp guardada…' : 'Todavía no guardaste plantillas de WhatsApp') + '</option>' +
-          ts.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('');
+          ts.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('') +
+          (others.length ? '<optgroup label="Guardadas como correo (se carga solo el texto)">' + others.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('') + '</optgroup>' : '');
+        if (keep && all.some(t => t.id === keep)) sel.value = keep;
       },
 
       loadSaved(id) {
         if (!id) return;
         const t = (storage.get('templates') || []).find(x => x.id === id);
         if (t) {
-          document.getElementById('wa-message-template').value = t.body;
+          let body = t.body || '';
+          if (t.channel !== 'whatsapp') {
+            // Plantilla de correo: pasar el HTML a texto plano para WhatsApp
+            body = body.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li)>/gi, '\n').replace(/<[^>]+>/g, '')
+              .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\n{3,}/g, '\n\n').trim();
+          }
+          document.getElementById('wa-message-template').value = body;
           app.showToast('Plantilla "' + t.name + '" cargada', 'info');
         }
       },
