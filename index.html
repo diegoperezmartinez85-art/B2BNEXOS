@@ -736,6 +736,7 @@ else go.disabled=false;pw.focus()},30)};
 
         <!-- TAB 2: Launch Bulk Campaign -->
         <div id="wa-tab-content-campaign" class="wa-tab-content hidden space-y-6">
+          <div id="wa-health"></div>
           <form id="wa-campaign-form" onsubmit="waApp.handleStartCampaign(event)" class="p-6 rounded-3xl bg-slate-900/40 border border-slate-800 space-y-6 backdrop-blur-xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
@@ -826,7 +827,7 @@ else go.disabled=false;pw.focus()},30)};
                 <label class="block text-xs font-semibold text-slate-300">
                   Mensaje de WhatsApp con Variables *
                 </label>
-                <div class="flex flex-wrap gap-1.5 justify-end"><button type="button" onclick="waApp.insertTag('{{nombre}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{nombre}}</button><button type="button" onclick="waApp.insertTag('{{empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{empresa}}</button><button type="button" onclick="waApp.insertTag('{{barrio}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{barrio}}</button><button type="button" onclick="waApp.insertTag('{{contacto}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{contacto}}</button><button type="button" onclick="waApp.insertTag('{{mi_nombre}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{mi_nombre}}</button><button type="button" onclick="waApp.insertTag('{{mi_empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{mi_empresa}}</button></div>
+                <div class="flex flex-wrap gap-1.5 justify-end"><button type="button" onclick="waApp.insertTag('{{nombre}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{nombre}}</button><button type="button" onclick="waApp.insertTag('{{empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{empresa}}</button><button type="button" onclick="waApp.insertTag('{{barrio}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{barrio}}</button><button type="button" onclick="waApp.insertTag('{{contacto}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{contacto}}</button><button type="button" onclick="waApp.insertTag('{{mi_nombre}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{mi_nombre}}</button><button type="button" onclick="waApp.insertTag('{{mi_empresa}}')" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">+{{mi_empresa}}</button><button type="button" onclick="waApp.insertTag('{Hola|Buenas|Qué tal}')" class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-[10px] font-mono border border-cyan-500/20">+{variantes}</button></div>
               </div>
 
               <div class="flex flex-wrap items-center gap-2">
@@ -847,6 +848,7 @@ Te escribo de parte de *{{mi_empresa}}* para presentarte nuestra propuesta para 
 
 Saludos cordiales!
 *{{mi_nombre}}*</textarea>
+              <p class="text-[10px] text-slate-500">Variantes: escribe <span class="font-mono text-cyan-300">{Hola|Buenas|Qué tal}</span> y en cada mensaje se elige una al azar, para que no salgan textos idénticos. También funciona en correos.</p>
             </div>
 
             <div class="flex justify-end">
@@ -1423,7 +1425,29 @@ Quedo a tu disposición,
               <div><label class="block text-xs font-semibold text-slate-300 mb-1">Correos</label><textarea id="dnc-footer-email" rows="2" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-blue-500"></textarea></div>
               <div><label class="block text-xs font-semibold text-slate-300 mb-1">WhatsApp</label><textarea id="dnc-footer-wa" rows="2" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500"></textarea></div>
               <div class="flex justify-end"><button type="button" onclick="dncApp.saveFooters()" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">Guardar pies</button></div>
-              <p class="text-[11px] text-amber-300/90">Cuando alguien responda BAJA, agrégalo aquí a mano: la app no lee tus respuestas.</p>
+              <p class="text-[11px] text-amber-300/90">Si alguien pide la baja por WhatsApp, agrégalo a mano o usá «Detectar bajas de WhatsApp» (más abajo).</p>
+            </div>
+          <div class="rounded-3xl bg-slate-900/40 border border-slate-800 p-6 backdrop-blur-xl space-y-3">
+              <div>
+                <h3 class="text-base font-bold text-white">Bajas automáticas desde tu bandeja</h3>
+                <p class="text-xs text-slate-400 mt-1">Lee las respuestas de tu Gmail y agrega a "No contactar" a quien escribió BAJA. Solo con cuentas de tipo Google Apps Script. Si ya tenías el script, en esa cuenta usa "Copiar script", reemplázalo, publica una versión nueva y autoriza el acceso a Gmail.</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">Cuenta</label><select id="dnc-auto-account" onchange="dncApp.saveAuto()" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs"></select></div>
+                <div><label class="block text-xs font-semibold text-slate-300 mb-1">Buscar en los últimos</label><select id="dnc-auto-days" onchange="dncApp.saveAuto()" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs"><option value="7">7 días</option><option value="14">14 días</option><option value="30">30 días</option></select></div>
+              </div>
+              <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer"><input id="dnc-auto-on" type="checkbox" onchange="dncApp.setAuto(this.checked)" class="accent-rose-500" /> Revisar solo al abrir la app y cada 2 horas (mientras esté abierta)</label>
+              <div class="flex items-center gap-3"><button type="button" id="dnc-auto-btn" onclick="dncApp.syncReplies(this)" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold disabled:opacity-50">Buscar bajas ahora</button><span id="dnc-auto-status" class="text-[11px] text-slate-500"></span></div>
+              <p class="text-[11px] text-slate-500">Solo detecta bajas por correo. Para WhatsApp usá el detector de abajo.</p>
+            </div>
+            <div class="rounded-3xl bg-slate-900/40 border border-slate-800 p-6 backdrop-blur-xl space-y-3">
+              <div>
+                <h3 class="text-base font-bold text-white">Detectar bajas de WhatsApp</h3>
+                <p class="text-xs text-slate-400 mt-1">Copiá las respuestas desde WhatsApp Web (o exportá el chat) y pegalas acá. Busco mensajes tipo "baja", "no me escriban" o "stop" y los cruzo con tus listas. Vos confirmás antes de agregar.</p>
+              </div>
+              <textarea id="wa-baja-input" rows="5" placeholder="[14:32, 18/10/2026] Carlos Mendoza: por favor dame de baja" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-emerald-500"></textarea>
+              <button type="button" onclick="waBajas.analyze()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">Analizar respuestas</button>
+              <div id="wa-baja-result" class="space-y-2"></div>
             </div>
           </div>
           <div class="rounded-3xl bg-slate-900/40 border border-slate-800 backdrop-blur-xl overflow-hidden self-start">
@@ -1457,6 +1481,12 @@ Quedo a tu disposición,
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Exportar Respaldo JSON
               </button>
+              <label class="flex items-start gap-2 text-[11px] text-slate-400 cursor-pointer"><input id="backup-secrets-toggle" type="checkbox" onchange="app.setWithSecrets(this.checked)" class="accent-amber-500 mt-0.5" /> <span>Incluir contraseñas y claves de correo. Si lo desmarcas, tendrás que volver a escribirlas al restaurar.</span></label>
+              <label class="w-full py-2 rounded-xl bg-emerald-950/20 hover:bg-emerald-950/40 text-emerald-300 text-xs font-semibold border border-emerald-900/30 transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Restaurar desde Respaldo
+                <input type="file" accept=".json,application/json" class="hidden" onchange="app.importDatabaseJson(event)" />
+              </label>
               <button onclick="app.clearAllClientData()" class="w-full py-2 rounded-xl bg-rose-950/20 hover:bg-rose-950/40 text-rose-400 text-xs font-semibold border border-rose-900/30 transition-colors">
                 Limpiar Datos para Nuevo Cliente
               </button>
@@ -1899,6 +1929,14 @@ self.addEventListener('fetch', (e) => {
         .replace(/[ \t]*\*?_?\{\{nombre\}\}_?\*?/g, '');
     }
 
+    // Variantes: {Hola|Buenas|Qué tal} elige una al azar. No toca las variables {{nombre}}.
+    function spin(t, mode) {
+      return String(t == null ? '' : t).replace(/\{([^{}|]*\|[^{}]*)\}/g, (m, g) => {
+        const o = g.split('|');
+        return mode === 'first' ? o[0] : o[Math.floor(Math.random() * o.length)];
+      });
+    }
+
     // ---------- MAIL SERVICE: envío real de correos (pruebas y futuras campañas) ----------
     const mailService = {
       fillMerge(text, data) {
@@ -2030,12 +2068,39 @@ self.addEventListener('fetch', (e) => {
     const RELAY_SCRIPT = [
       "// Pega esto en script.google.com > Nuevo proyecto > Implementar > Aplicación web",
       "// Ejecutar como: Yo  |  Quién tiene acceso: Cualquier usuario",
+      "// Si ya tenías el script: reemplázalo, ve a Implementar > Administrar implementaciones > Editar > Versión nueva y autoriza el acceso a Gmail.",
       "const SECRET = 'cambia-esta-clave'; // solo para modo Gmail; ponla igual en el campo 'Clave secreta'",
       "function out_(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }",
       "function doGet(){ return out_({ok:true, msg:'Relay activo', quota: MailApp.getRemainingDailyQuota()}); }",
+      "// Busca en tu bandeja respuestas que pidan la baja (ignora el texto citado de tu propio correo)",
+      "function bajas_(days){",
+      "  var re = /\\b(baja|unsubscribe|desuscrib\\w*|no (quiero|deseo) (recibir|mas|más)|no me (escriban|contacten|envi\\w*))\\b/i;",
+      "  var me = Session.getActiveUser().getEmail().toLowerCase();",
+      "  var since = Date.now() - days * 864e5, seen = {}, res = [];",
+      "  GmailApp.search('in:inbox newer_than:' + days + 'd', 0, 200).forEach(function(t){",
+      "    t.getMessages().forEach(function(m){",
+      "      if (m.getDate().getTime() < since) return;",
+      "      var from = m.getFrom(), mm = from.match(/<([^>]+)>/), addr = (mm ? mm[1] : from).trim().toLowerCase();",
+      "      if (addr === me || /mailer-daemon|no-?reply|postmaster/.test(addr)) return;",
+      "      var keep = [], lines = m.getPlainBody().split(/\\r?\\n/);",
+      "      for (var i = 0; i < lines.length; i++) {",
+      "        var l = lines[i].trim();",
+      "        if (/^(on .+wrote:|el .+escribi[oó]:|-{2,}\\s*(original|mensaje|forwarded))/i.test(l)) break;",
+      "        if (l.charAt(0) === '>') continue;",
+      "        keep.push(l);",
+      "      }",
+      "      if (re.test(keep.join(' ').slice(0, 300)) && !seen[addr]) { seen[addr] = 1; res.push({email: addr, date: m.getDate().toISOString()}); }",
+      "    });",
+      "  });",
+      "  return res;",
+      "}",
       "function doPost(e){",
       "  try {",
       "    var d = JSON.parse(e.postData.contents);",
+      "    if (d.action === 'bajas') {",
+      "      if (SECRET && d.apiKey !== SECRET) return out_({ok:false, error:'Clave secreta incorrecta'});",
+      "      return out_({ok:true, bajas: bajas_(Math.min(Math.max(+d.days || 14, 1), 60))});",
+      "    }",
       "    if (d.resendKey) {",
       "      var r = UrlFetchApp.fetch('https://api.resend.com/emails', {",
       "        method:'post', contentType:'application/json', muteHttpExceptions:true,",
@@ -2094,6 +2159,7 @@ self.addEventListener('fetch', (e) => {
       renderSettings() {
         const cb = document.getElementById('backup-remind-toggle'), t = document.getElementById('backup-last');
         if (cb) cb.checked = this.enabled();
+        const sc = document.getElementById('backup-secrets-toggle'); if (sc) sc.checked = app.withSecrets();
         if (t) t.textContent = 'Último respaldo: ' + this.ago();
       }
     };
@@ -2349,26 +2415,80 @@ self.addEventListener('fetch', (e) => {
         }, 4000);
       },
 
-      exportDatabaseJson() {
-        const backup = {
-          profile: storage.get('profile'),
-          lists: storage.get('lists'),
-          templates: storage.get('templates'),
-          campaigns: storage.get('campaigns'),
-          waCampaigns: storage.get('waCampaigns'),
-          smtpConfigs: storage.get('smtpConfigs'),
-          dnc: storage.get('dnc'),
-          exportedAt: new Date().toISOString()
-        };
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
+      BACKUP_ARRAYS: ['lists', 'templates', 'campaigns', 'waCampaigns', 'smtpConfigs', 'dnc'],
+      BACKUP_KEYS: ['profile', 'lists', 'templates', 'campaigns', 'waCampaigns', 'smtpConfigs', 'dnc', 'dncSettings', 'dncAuto', 'waSettings', 'waScriptUrl', 'waDefaultArea', 'waAutoSteps', 'waConnected'],
+
+      buildBackup(withSecrets) {
+        const data = {};
+        this.BACKUP_KEYS.forEach(k => { const v = storage.get(k); if (v !== null && v !== undefined) data[k] = v; });
+        if (!withSecrets && Array.isArray(data.smtpConfigs)) data.smtpConfigs = data.smtpConfigs.map(c => ({ ...c, pass: '' }));
+        return { app: 'outreach_engine', version: 2, exportedAt: new Date().toISOString(), includesSecrets: !!withSecrets, data };
+      },
+      downloadJson(obj, name) {
+        const url = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' }));
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `outreach_backup_${new Date().toISOString().slice(0, 10)}.json`;
-        a.click();
+        a.href = url; a.download = name; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      },
+      withSecrets() { return storage.get('backupWithSecrets') !== false; },
+      setWithSecrets(v) { storage.save('backupWithSecrets', !!v); },
+
+      exportDatabaseJson() {
+        this.downloadJson(this.buildBackup(this.withSecrets()), `outreach_backup_${new Date().toISOString().slice(0, 10)}.json`);
         storage.save('lastBackup', Date.now());
         backupReminder.hide(); backupReminder.renderSettings();
-        this.showToast('Respaldo descargado con éxito', 'success');
+        this.showToast('Respaldo descargado' + (this.withSecrets() ? ' (incluye contraseñas: guárdalo en un lugar seguro)' : ' (sin contraseñas)'), 'success');
+      },
+
+      // Acepta el formato nuevo ({version:2, data:{...}}) y los respaldos viejos (claves sueltas).
+      parseBackup(text) {
+        let j; try { j = JSON.parse(text); } catch (e) { throw new Error('El archivo no es un respaldo válido (no se pudo leer).'); }
+        if (!j || typeof j !== 'object' || Array.isArray(j)) throw new Error('El archivo no es un respaldo de esta app.');
+        const src = (j.data && typeof j.data === 'object') ? j.data : j;
+        const data = {};
+        this.BACKUP_KEYS.forEach(k => { if (src[k] !== undefined && src[k] !== null) data[k] = src[k]; });
+        if (!Object.keys(data).length) throw new Error('El archivo no contiene datos de esta app.');
+        this.BACKUP_ARRAYS.forEach(k => { if (k in data && !Array.isArray(data[k])) throw new Error('Respaldo dañado: "' + k + '" no tiene el formato esperado.'); });
+        if ('profile' in data && (typeof data.profile !== 'object' || Array.isArray(data.profile))) throw new Error('Respaldo dañado: "profile" no tiene el formato esperado.');
+        return { data, exportedAt: j.exportedAt || null };
+      },
+
+      importDatabaseJson(ev) {
+        const f = ev.target.files && ev.target.files[0];
+        ev.target.value = '';
+        if (!f) return;
+        const fr = new FileReader();
+        fr.onerror = () => this.showToast('No se pudo leer el archivo', 'error');
+        fr.onload = () => {
+          let parsed;
+          try { parsed = this.parseBackup(String(fr.result)); } catch (e) { return this.showToast(e.message, 'error'); }
+          const d = parsed.data, n = k => Array.isArray(d[k]) ? d[k].length : 0;
+          const nContacts = (d.lists || []).reduce((s, l) => s + ((l.contacts || []).length), 0);
+          const when = parsed.exportedAt ? new Date(parsed.exportedAt).toLocaleString() : 'fecha desconocida';
+          const lines = [
+            'Respaldo del ' + when,
+            '',
+            '• ' + n('lists') + ' listas (' + nContacts + ' contactos)',
+            '• ' + n('templates') + ' plantillas',
+            '• ' + n('campaigns') + ' campañas de email y ' + n('waCampaigns') + ' de WhatsApp',
+            '• ' + n('smtpConfigs') + ' cuentas de correo',
+            '• ' + n('dnc') + ' en "No contactar"',
+            '',
+            'Esto REEMPLAZA los datos actuales de esos apartados. Antes de reemplazar se descarga una copia de lo que tienes ahora.',
+            '',
+            '¿Restaurar?'
+          ];
+          if (!confirm(lines.join('\n'))) return;
+          try {
+            this.downloadJson(this.buildBackup(true), `outreach_antes_de_restaurar_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`);
+            Object.keys(d).forEach(k => localStorage.setItem(storage.prefix + k, JSON.stringify(d[k])));
+          } catch (e) {
+            return this.showToast('No se pudo restaurar: ' + e.message, 'error');
+          }
+          this.showToast('Respaldo restaurado. Recargando...', 'success');
+          setTimeout(() => location.reload(), 900);
+        };
+        fr.readAsText(f);
       },
 
       clearAllClientData() {
@@ -2543,6 +2663,7 @@ self.addEventListener('fetch', (e) => {
           select.innerHTML = chOptions('wa', '— No tienes listas con teléfonos: importa contactos arriba —');
         }
         this.fillSaved();
+        waHealth.render();
       },
 
       fillSaved() {
@@ -2802,7 +2923,7 @@ self.addEventListener('fetch', (e) => {
         const contact = state.contacts[state.currentIndex];
         const timeStr = new Date().toLocaleTimeString();
 
-        let message = fillNombre(state.templateText, contact.name)
+        let message = fillNombre(spin(state.templateText), contact.name)
           .replace(/\{\{empresa\}\}/g, contact.company || 'su empresa')
           .replace(/\{\{barrio\}\}/g, contact.neighborhood || 'la zona')
           .replace(/\{\{contacto\}\}/g, contact.contactRole || 'Administrador')
@@ -2838,6 +2959,12 @@ self.addEventListener('fetch', (e) => {
           this.pauseCampaign();
           return;
         }
+        const hh = waHealth.eval();
+        if (hh.level === 'red' && !state.healthOverride) {
+          addLog('text-rose-300', 'Salud del número en riesgo (' + hh.score + '/100): ' + waImport.esc(hh.issues.join(' · ')) + '. Campaña pausada; revisá y pulsá Reanudar si querés seguir igual.');
+          this.pauseCampaign(); waHealth.render();
+          return;
+        }
         if (cfg.signature) message += '\n\n' + cfg.signature;
         const waFoot = dncApp.cfg().waFooter.trim(); if (waFoot) message += '\n\n' + waFoot;
         const win = this.openChat(fullPhone, message);
@@ -2851,7 +2978,7 @@ self.addEventListener('fetch', (e) => {
         state.sent++;
         state.currentIndex++;
         document.getElementById('wa-count-sent').textContent = state.sent;
-        analytics.waLive(state);
+        analytics.waLive(state); waHealth.render();
 
         analytics.waEvent(state, contact, 'SENT', '');
         addLog('text-emerald-300', `Chat abierto para ${waImport.esc(contact.name || contact.company || contact.email || '(sin nombre)')} (+${fullPhone})`);
@@ -2881,6 +3008,7 @@ self.addEventListener('fetch', (e) => {
         document.getElementById('wa-monitor-status-badge').textContent = 'RUNNING';
         document.getElementById('wa-btn-pause').classList.remove('hidden');
         document.getElementById('wa-btn-resume').classList.add('hidden');
+        this.campaignState.healthOverride = true;
         this.dispatchNextWhatsApp();
         analytics.waSync(this.campaignState);
         app.showToast('Campaña Reanudada', 'success');
@@ -3256,6 +3384,134 @@ self.addEventListener('fetch', (e) => {
     };
 
 
+    // ---------- SALUD DEL NÚMERO (semáforo) ----------
+    const waHealth = {
+      stats() {
+        const now = Date.now(), d7 = now - 7 * 864e5, h1 = now - 36e5;
+        let sent = 0, failed = 0, invalid = 0, rep = 0, lastHour = 0;
+        (storage.get('waCampaigns') || []).forEach(c => (c.events || []).forEach(e => {
+          if (e.t < d7) return;
+          if (e.s === 'SENT') { sent++; if (e.r > 0) rep++; if (e.t >= h1) lastHour++; }
+          else { failed++; if (/inv[aá]lid|no tiene whatsapp|not on whatsapp/i.test(e.err || '')) invalid++; }
+        }));
+        const bajas = dncApp.list().filter(x => /^WhatsApp/i.test(x.source || '') && new Date(x.addedAt).getTime() >= d7).length;
+        return { sent, failed, invalid, rep, lastHour, bajas, today: waSettings.sentToday(), daily: waSettings.get().daily };
+      },
+      eval() {
+        const s = this.stats(), issues = [], total = s.sent + s.failed; let score = 100;
+        const pen = (n, m) => { score -= n; issues.push(m); };
+        const use = s.today / s.daily;
+        if (use >= 1) pen(20, 'Llegaste al límite diario'); else if (use >= .8) pen(10, 'Cerca del límite diario (' + s.today + '/' + s.daily + ')');
+        if (total >= 10) {
+          const fr = s.failed / total;
+          if (fr > .3) pen(30, 'Muchos fallos (' + Math.round(fr * 100) + '%): revisá la calidad de los números');
+          else if (fr > .15) pen(15, 'Fallos altos (' + Math.round(fr * 100) + '%)');
+        }
+        if (s.sent >= 20) {
+          const br = s.bajas / s.sent;
+          if (br > .08) pen(30, 'Muchas bajas (' + Math.round(br * 100) + '%): tu mensaje molesta o la lista es fría');
+          else if (br > .03) pen(15, 'Bajas por encima de lo normal (' + Math.round(br * 100) + '%)');
+        }
+        if (s.lastHour > 40) pen(20, 'Ritmo muy alto: ' + s.lastHour + ' mensajes en la última hora');
+        else if (s.lastHour > 25) pen(10, 'Ritmo alto: ' + s.lastHour + ' mensajes en la última hora');
+        score = Math.max(0, score);
+        return { ...s, score, issues, level: score >= 75 ? 'green' : score >= 50 ? 'amber' : 'red' };
+      },
+      render() {
+        const el = document.getElementById('wa-health'); if (!el) return;
+        const h = this.eval(), e = waImport.esc;
+        const c = { green: ['emerald', 'Saludable'], amber: ['amber', 'Precaución'], red: ['rose', 'Riesgo: conviene frenar'] }[h.level];
+        const tot = h.sent + h.failed;
+        const cell = (l, v) => `<div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-center"><p class="text-[10px] text-slate-400">${l}</p><p class="text-sm font-bold text-white mt-0.5">${v}</p></div>`;
+        el.innerHTML = `<div class="p-5 rounded-3xl bg-slate-900/40 border border-${c[0]}-500/30 space-y-3">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-${c[0]}-400"></span><h3 class="text-sm font-bold text-white">Salud del número</h3><span class="text-xs font-semibold text-${c[0]}-300">${c[1]} · ${h.score}/100</span></div>
+            <button type="button" onclick="app.navigate('settings'); settingsApp.showTab('dnc')" class="text-[11px] text-emerald-300 hover:text-emerald-200 font-semibold">Detectar bajas →</button>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+            ${cell('Hoy', h.today + '/' + h.daily)}${cell('Última hora', h.lastHour)}${cell('Fallos 7 días', tot ? Math.round(h.failed / tot * 100) + '%' : '—')}${cell('Bajas 7 días', h.bajas)}${cell('Respuestas 7 días', h.rep || '—')}
+          </div>
+          <ul class="text-[11px] ${h.issues.length ? 'text-' + c[0] + '-300' : 'text-slate-500'} space-y-0.5">${h.issues.length ? h.issues.map(i => '<li>• ' + e(i) + '</li>').join('') : '<li>Sin alertas. Seguí con ritmo parejo y pausas.</li>'}</ul>
+          <p class="text-[10px] text-slate-500">Se calcula con tus últimos 7 días. "Enviado" = chat abierto desde la app. Marcá las respuestas en Estadísticas para ver ese dato. En rojo, la campaña se pausa sola.</p>
+        </div>`;
+      }
+    };
+
+    // ---------- DETECTOR DE BAJAS DE WHATSAPP ----------
+    const waBajas = {
+      re: /(^|[^a-záéíóúñ])(baja|dar de baja|dame de baja|desuscrib\w*|unsubscribe|stop|no (quiero|deseo|necesito) (recibir|m[aá]s|nada|mensajes)|no me (escriban|contacten|molesten|env[ií]\w*|manden|hablen)|dej(en|ar|[aá]) de (escribir|enviar|mandar|molestar|contactar|insistir)|basta)([^a-záéíóúñ]|$)/i,
+      norm: s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(),
+      found: [],
+      parse(text) {
+        const out = [];
+        String(text || '').split(/\r?\n/).forEach(line => {
+          line = line.trim(); if (!line) return;
+          const m = line.match(/^\[[^\]]*\]\s*([^:]+):\s*(.+)$/)
+            || line.match(/^\d{1,2}\/\d{1,2}\/\d{2,4},?\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:[ap]\.?\s?m\.?)?\s*-\s*([^:]+):\s*(.+)$/i)
+            || line.match(/^([^:]{2,40}):\s*(.+)$/);
+          out.push(m ? { who: m[1].trim(), msg: m[2].trim() } : { who: '', msg: line });
+        });
+        return out;
+      },
+      analyze() {
+        const box = document.getElementById('wa-baja-result'), e = waImport.esc;
+        const me = this.norm(app.profile?.userName);
+        const idx = [];
+        (storage.get('lists') || []).forEach(l => (l.contacts || []).forEach(c => {
+          if (c.phone) idx.push({ c, n: this.norm(c.name), p: String(c.phone).replace(/\D/g, '').slice(-10) });
+        }));
+        const have = dncApp.keys(), seen = new Set(), rows = [], unknown = new Set();
+        let already = 0, last = '';
+        this.parse(document.getElementById('wa-baja-input').value).forEach(({ who, msg }) => {
+          if (who) last = who; else who = last;
+          if (!this.re.test(msg)) return;
+          const wn = this.norm(who);
+          if (!wn || wn === me || wn === 'tu' || wn === 'yo') { if (!wn) unknown.add('(sin nombre)'); return; }
+          const ph = (who.match(/\+?\d[\d\s().-]{6,}\d/) || [])[0];
+          let hits = [], note = '', ok = true;
+          if (ph) {
+            const p = ph.replace(/\D/g, '').slice(-10);
+            hits = idx.filter(x => x.p === p).map(x => x.c);
+            if (!hits.length) hits = [{ name: ph, phone: ph }];
+          } else {
+            const ex = idx.filter(x => x.n && x.n === wn);
+            if (ex.length === 1) hits = [ex[0].c];
+            else if (ex.length > 1) { hits = ex.map(x => x.c); ok = false; note = 'varios contactos con ese nombre'; }
+            else {
+              const pa = idx.filter(x => x.n && Math.min(x.n.length, wn.length) >= 4 && (wn.includes(x.n) || x.n.includes(wn)));
+              if (pa.length) { hits = pa.map(x => x.c); ok = false; note = 'coincidencia parcial de nombre'; }
+            }
+          }
+          if (!hits.length) { unknown.add(who); return; }
+          hits.forEach(c => {
+            const k = dncApp.key(c.phone); if (!k) return;
+            if (have.has(k)) { already++; return; }
+            if (seen.has(k)) return; seen.add(k);
+            rows.push({ name: c.name || c.company || c.phone, phone: c.phone, msg, ok, note });
+          });
+        });
+        this.found = rows;
+        if (!document.getElementById('wa-baja-input').value.trim()) { box.innerHTML = '<p class="text-xs text-slate-500">Pegá primero las respuestas.</p>'; return; }
+        let h = '';
+        if (rows.length) {
+          h += rows.map((r, i) => `<label class="flex items-start gap-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs cursor-pointer"><input type="checkbox" data-i="${i}" ${r.ok ? 'checked' : ''} class="accent-rose-500 mt-0.5" /><span class="text-slate-200"><b>${e(r.name)}</b> · ${e(r.phone)}${r.note ? ' <span class="text-amber-300">(' + e(r.note) + ')</span>' : ''}<br><span class="text-slate-400">"${e(r.msg.slice(0, 120))}"</span></span></label>`).join('');
+          h += '<button type="button" onclick="waBajas.add()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold">Agregar seleccionadas a No contactar</button>';
+        } else h += '<p class="text-xs text-slate-400">No encontré bajas nuevas en el texto.</p>';
+        if (already) h += `<p class="text-[11px] text-slate-500">${already} ya estaban en la lista.</p>`;
+        if (unknown.size) h += `<p class="text-[11px] text-amber-300/90">Pidieron baja pero no están en tus listas: ${e([...unknown].slice(0, 8).join(', '))}. Agregalos a mano con su teléfono.</p>`;
+        box.innerHTML = h;
+      },
+      add() {
+        const sel = [...document.querySelectorAll('#wa-baja-result input[data-i]:checked')].map(i => this.found[+i.dataset.i].phone);
+        if (!sel.length) return app.showToast('No seleccionaste ninguna', 'info');
+        const n = dncApp.add(sel.join('\n'), 'WhatsApp (detectado)');
+        dncApp.render(); waHealth.render();
+        document.getElementById('wa-baja-result').innerHTML = '';
+        document.getElementById('wa-baja-input').value = '';
+        app.showToast(n + ' baja' + (n === 1 ? '' : 's') + ' agregada' + (n === 1 ? '' : 's') + ' a "No contactar"', 'success');
+      }
+    };
+
     // ---------- NO CONTACTAR (bajas) ----------
     const dncApp = {
       defaults: { emailFooter: 'Si no querés recibir más mensajes, respondé BAJA a este correo.', waFooter: 'Si no querés recibir más mensajes, respondé BAJA.' },
@@ -3326,6 +3582,65 @@ self.addEventListener('fetch', (e) => {
         });
         app.showToast('Pies de baja guardados', 'success');
       },
+      autoCfg() { return { on: false, accountId: '', days: 14, last: 0, ...(storage.get('dncAuto') || {}) }; },
+      autoAccounts() { return (storage.get('smtpConfigs') || []).filter(a => a.providerType === 'apps_script'); },
+      saveAuto() {
+        const c = this.autoCfg();
+        c.accountId = document.getElementById('dnc-auto-account').value;
+        c.days = parseInt(document.getElementById('dnc-auto-days').value) || 14;
+        storage.save('dncAuto', c);
+      },
+      setAuto(on) {
+        const c = this.autoCfg(); c.on = !!on; c.last = 0; storage.save('dncAuto', c);
+        app.showToast(on ? 'Revisión automática de bajas activada' : 'Revisión automática desactivada', 'info');
+        if (on) this.syncReplies(null, true);
+      },
+      renderAuto() {
+        const sel = document.getElementById('dnc-auto-account'); if (!sel) return;
+        const c = this.autoCfg(), accs = this.autoAccounts();
+        sel.innerHTML = accs.length ? accs.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${esc(a.fromEmail || '')})</option>`).join('') : '<option value="">Agrega una cuenta de Apps Script en Correo</option>';
+        if (accs.some(a => a.id === c.accountId)) sel.value = c.accountId;
+        document.getElementById('dnc-auto-days').value = String(c.days);
+        document.getElementById('dnc-auto-on').checked = !!c.on;
+        document.getElementById('dnc-auto-status').textContent = c.last ? 'Última revisión: ' + new Date(c.last).toLocaleString() : '';
+      },
+      autoCheck() {
+        const c = this.autoCfg();
+        if (c.on && Date.now() - (c.last || 0) >= 2 * 36e5) this.syncReplies(null, true);
+      },
+      async syncReplies(btn, silent) {
+        if (this._busy) return;
+        const c = this.autoCfg(), accs = this.autoAccounts();
+        const acc = accs.find(a => a.id === c.accountId) || accs[0];
+        const st = document.getElementById('dnc-auto-status');
+        const say = (m, t) => { if (!silent || t === 'success') app.showToast(m, t || 'error'); };
+        if (!acc) return say('Necesitas una cuenta de tipo Google Apps Script en la pestaña Correo.');
+        if (!acc.host) return say('Falta la URL de la Web App en esa cuenta.');
+        this._busy = true;
+        if (btn) btn.disabled = true;
+        if (st) st.textContent = 'Buscando en tu bandeja...';
+        try {
+          let resp;
+          try {
+            resp = await fetch(acc.host, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'bajas', days: c.days, apiKey: acc.pass || undefined }) });
+          } catch (e) { throw new Error('No se pudo contactar la Web App (revisa la URL y que esté publicada).'); }
+          const txt = await resp.text();
+          if (/<html|<!doctype/i.test(txt)) throw new Error('La Web App devolvió una página en vez de datos: publícala con acceso "Cualquier usuario" y, si la actualizaste, crea una versión nueva y autoriza Gmail.');
+          let j; try { j = JSON.parse(txt); } catch (e) { throw new Error('Respuesta inesperada de la Web App.'); }
+          if (j.ok === false) throw new Error(j.error || 'La Web App devolvió un error.');
+          if (!Array.isArray(j.bajas)) throw new Error('El script del relay es de una versión anterior: usa "Copiar script", reemplázalo y publica una versión nueva.');
+          const n = this.add(j.bajas.map(x => x.email).join('\n'), 'respuesta BAJA');
+          const c2 = this.autoCfg(); c2.last = Date.now(); storage.save('dncAuto', c2);
+          this.render();
+          if (n || !silent) say(j.bajas.length + ' respuesta' + (j.bajas.length === 1 ? '' : 's') + ' con BAJA, ' + n + ' nueva' + (n === 1 ? '' : 's') + ' agregada' + (n === 1 ? '' : 's') + ' a "No contactar"', 'success');
+        } catch (err) {
+          if (st) st.textContent = '';
+          say('No se pudieron revisar las bajas: ' + err.message);
+        } finally {
+          this._busy = false;
+          if (btn) btn.disabled = false;
+        }
+      },
       exportCsv() {
         const l = this.list();
         if (!l.length) return app.showToast('La lista está vacía', 'info');
@@ -3335,6 +3650,7 @@ self.addEventListener('fetch', (e) => {
         const c = this.cfg(), l = this.list();
         const fe = document.getElementById('dnc-footer-email'), fw = document.getElementById('dnc-footer-wa');
         if (!fe) return;
+        this.renderAuto();
         fe.value = c.emailFooter; fw.value = c.waFooter;
         document.getElementById('dnc-count').textContent = l.length;
         const MAX = 300;
@@ -3546,7 +3862,7 @@ self.addEventListener('fetch', (e) => {
             let ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ct.email || ''), err = ok ? '' : 'Email inválido', provErr = false;
             if (ok) {
               try {
-                await mailService.send(cfg, { to: ct.email, subject: mailService.fillMerge(tpl.subject, ct), body: dncApp.withEmailFooter(mailService.fillMerge(tpl.body, ct)) });
+                await mailService.send(cfg, { to: ct.email, subject: mailService.fillMerge(spin(tpl.subject), ct), body: dncApp.withEmailFooter(mailService.fillMerge(spin(tpl.body), ct)) });
               } catch (e) { ok = false; provErr = true; err = (e && e.message) || 'Error de envío'; }
             }
             camps = storage.get('campaigns') || [];
@@ -4107,7 +4423,7 @@ self.addEventListener('fetch', (e) => {
         const tb = document.getElementById('tpl-wa-toolbar');
         tb.classList.toggle('hidden', !isWa); tb.classList.toggle('flex', isWa);
         document.getElementById('tpl-hint').textContent = isWa
-          ? 'Formato: *negrita*  _cursiva_  ~tachado~'
+          ? 'Formato: *negrita*  _cursiva_  ~tachado~  ·  Variantes: {Hola|Buenas}'
           : 'Podés escribir texto simple o HTML.';
         const btn = document.getElementById('tpl-save-btn');
         btn.className = 'px-6 py-2.5 rounded-xl text-white text-xs font-semibold shadow-lg transition-all ' + th.btn;
@@ -4213,7 +4529,7 @@ self.addEventListener('fetch', (e) => {
       // ---- vista previa ----
       fill(text) {
         const noName = document.getElementById('tpl-noname')?.checked;
-        return fillNombre(text, noName ? '' : 'Carlos Mendoza')
+        return fillNombre(spin(text, 'first'), noName ? '' : 'Carlos Mendoza')
           .replace(/\{\{empresa\}\}/g, 'Inmobiliaria Central')
           .replace(/\{\{contacto\}\}/g, 'Gerente Comercial')
           .replace(/\{\{barrio\}\}/g, 'Zona Norte')
@@ -4494,6 +4810,8 @@ self.addEventListener('fetch', (e) => {
     window.addEventListener('DOMContentLoaded', () => {
       app.init();
       backupReminder.check();
+      dncApp.autoCheck();
+      setInterval(() => dncApp.autoCheck(), 10 * 60 * 1000);
       setInterval(() => backupReminder.check(), 30 * 60 * 1000);
 
       // Check onboarding on first load
