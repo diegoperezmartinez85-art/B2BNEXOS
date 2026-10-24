@@ -1078,6 +1078,14 @@ Quedo a tu disposición,
             </button>
           </div>
 
+          <div class="flex flex-wrap items-center gap-2">
+          <button
+            onclick="contactsApp.exportAllLists()"
+            class="px-3.5 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Descargar todas las listas</span>
+          </button>
           <button
             onclick="contactsApp.downloadSampleCsv()"
             class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
@@ -1085,6 +1093,7 @@ Quedo a tu disposición,
             <svg class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Descargar CSV de Ejemplo</span>
           </button>
+          </div>
         </div>
 
         <div id="contacts-content-lists" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -4202,9 +4211,14 @@ self.addEventListener('fetch', (e) => {
             >
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-sm font-bold text-white tracking-tight">${esc(l.name)}</span>
-                <button onclick="event.stopPropagation(); contactsApp.deleteList('${l.id}')" class="p-1 text-slate-500 hover:text-rose-400">
-                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                </button>
+                <span class="flex items-center gap-1">
+                  <button onclick="event.stopPropagation(); contactsApp.exportList('${l.id}')" title="Descargar esta lista en CSV" class="p-1 text-slate-500 hover:text-emerald-400">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </button>
+                  <button onclick="event.stopPropagation(); contactsApp.deleteList('${l.id}')" title="Eliminar lista" class="p-1 text-slate-500 hover:text-rose-400">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </span>
               </div>
               <div class="flex items-center justify-between text-xs text-slate-400">
                 <span>${l.contacts?.length || 0} contactos · ✉️ ${chContacts(l,'email').length} · 💬 ${chContacts(l,'wa').length}</span>
@@ -4224,7 +4238,13 @@ self.addEventListener('fetch', (e) => {
                 <h3 class="text-base font-bold text-white">${selectedList.name}</h3>
                 <p class="text-xs text-slate-400">${selectedList.description || 'Audiencia segmentada'} · <strong>${selectedList.contacts?.length || 0} contactos</strong></p>
               </div>
-              <input type="text" id="contact-search-input" oninput="contactsApp.filterContacts(this.value)" placeholder="Buscar contacto..." class="px-3.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white" />
+              <div class="flex items-center gap-2">
+                <input type="text" id="contact-search-input" oninput="contactsApp.filterContacts(this.value)" placeholder="Buscar contacto..." class="px-3.5 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white" />
+                <button type="button" onclick="contactsApp.exportList('${selectedList.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 whitespace-nowrap">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Descargar CSV</span>
+                </button>
+              </div>
             </div>
 
             ${(() => { const t = selectedList.contacts.length, e = chContacts(selectedList,'email').length, w = chContacts(selectedList,'wa').length; return (e < t || w < t) ? `<div class="rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs px-3 py-2">⚠️ ${t - e} contactos sin email válido (no recibirán correos) · ${t - w} sin teléfono válido (no recibirán WhatsApp). Cada campaña usa solo los que tienen el dato.</div>` : `<div class="rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs px-3 py-2">✅ Todos los contactos sirven para email y WhatsApp.</div>`; })()}
@@ -4395,6 +4415,47 @@ self.addEventListener('fetch', (e) => {
         this.cancelImport();
         this.switchTab('lists');
         app.showToast(`Importados ${out.length} contactos`, 'success');
+      },
+
+      // --- Descarga de listas en CSV (mismas columnas que la importación, para poder reimportarlas) ---
+      csvCell(v) {
+        let s = String(v ?? '');
+        if (/^[=@\t\r]/.test(s)) s = "'" + s; // evita inyección de fórmulas al abrir en Excel
+        return '"' + s.replace(/"/g, '""') + '"';
+      },
+
+      csvFileName(base) {
+        const slug = String(base || 'lista').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'lista';
+        return slug + '_' + new Date().toISOString().slice(0, 10) + '.csv';
+      },
+
+      saveCsv(rows, fileName) {
+        const text = '\ufeff' + rows.map(r => r.map(c => this.csvCell(c)).join(',')).join('\r\n');
+        const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = fileName; a.style.display = 'none';
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1500);
+      },
+
+      exportList(id) {
+        const list = (storage.get('lists') || []).find(l => l.id === id);
+        if (!list || !(list.contacts || []).length) { app.showToast('La lista no tiene contactos para descargar', 'error'); return; }
+        const rows = [['email', 'nombre', 'empresa', 'contacto', 'barrio', 'telefono']]
+          .concat(list.contacts.map(c => [c.email, c.name, c.company, c.contactRole, c.neighborhood, c.phone]));
+        this.saveCsv(rows, this.csvFileName(list.name));
+        app.showToast(`CSV descargado: ${list.contacts.length} contactos`, 'success');
+      },
+
+      exportAllLists() {
+        const lists = (storage.get('lists') || []).filter(l => (l.contacts || []).length);
+        if (!lists.length) { app.showToast('No hay listas con contactos para descargar', 'error'); return; }
+        const rows = [['lista', 'email', 'nombre', 'empresa', 'contacto', 'barrio', 'telefono']];
+        let n = 0;
+        lists.forEach(l => l.contacts.forEach(c => { rows.push([l.name, c.email, c.name, c.company, c.contactRole, c.neighborhood, c.phone]); n++; }));
+        this.saveCsv(rows, this.csvFileName('todas_las_listas'));
+        app.showToast(`CSV descargado: ${lists.length} listas, ${n} contactos`, 'success');
       },
 
       downloadSampleCsv() {
